@@ -28,8 +28,8 @@ public class InputListener extends InputAdapter {
                     if(tile.player==Tile.RED && (tile.color==Tile.EMPTY || tile.color==Tile.RED))
                     {
                         tile.color=Tile.RED;
-                        tile.threshold--;
-                        if(tile.threshold==0)
+                        tile.clicked++;
+                        if(tile.clicked==tile.threshold)
                         {
                             tile.explode=true;
                         }
@@ -37,8 +37,8 @@ public class InputListener extends InputAdapter {
                     else if(tile.player==Tile.BLUE && (tile.color==Tile.EMPTY|| tile.color==Tile.BLUE))
                     {
                         tile.color=Tile.BLUE;
-                        tile.threshold--;
-                        if(tile.threshold==0)
+                        tile.clicked++;
+                        if(tile.clicked==tile.threshold)
                         {
                             tile.explode=true;
                         }
