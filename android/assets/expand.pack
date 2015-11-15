@@ -3,51 +3,58 @@ expand.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+gameOver
+  rotate: false
+  xy: 1, 51
+  size: 200, 50
+  orig: 200, 50
+  offset: 0, 0
+  index: -1
 BlueOrb
   rotate: false
-  xy: 1, 1
+  xy: 203, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BlueOrb2
   rotate: false
-  xy: 103, 1
+  xy: 305, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BlueOrb3
   rotate: false
-  xy: 205, 1
+  xy: 407, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 RedOrb
   rotate: false
-  xy: 307, 1
+  xy: 509, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 RedOrb2
   rotate: false
-  xy: 409, 1
+  xy: 611, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 RedOrb3
   rotate: false
-  xy: 511, 1
+  xy: 713, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 tile
   rotate: false
-  xy: 613, 1
+  xy: 815, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

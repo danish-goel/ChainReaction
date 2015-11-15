@@ -62,6 +62,7 @@ public class Tile {
         red3 = getAtlas("pack").findRegion("RedOrb3");
 
 
+
     }
 
     public void loadAtlas(String path, String key){
@@ -73,7 +74,7 @@ public class Tile {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(tile,x-width/2,y-height/2, width, height);
+        batch.draw(tile, x - width / 2, y - height / 2, width, height);
         if(color== RED){
             if(clicked==1) {
                 batch.draw(blue, x - width / 2, y - height / 2, width, height);
@@ -99,7 +100,9 @@ public class Tile {
             {
                 batch.draw(red3,x-width/2,y-height/2, width, height);
             }
+
         }
+
     }
 
     public boolean touched(float x, float y){

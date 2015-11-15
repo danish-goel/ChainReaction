@@ -39,6 +39,10 @@ public class InputListener extends InputAdapter {
                         chainreaction.turn = !chainreaction.turn;   //turn does not change
                     }
                     chainreaction.turn = !chainreaction.turn;
+                    if(chainreaction.checkWinner(tile.player)==1)
+                    {
+                        chainreaction.gameOver=true;
+                    }
                 }
             }
         }
