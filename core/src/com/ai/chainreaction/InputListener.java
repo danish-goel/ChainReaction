@@ -46,11 +46,11 @@ public class InputListener extends InputAdapter {
 
     public void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
         tile.color = color;
-        tile.clicked++;
-        if (tile.clicked == tile.threshold) {
+        tile.numOrbs++;
+        if (tile.numOrbs == tile.threshold) {
             tile.explode = true;
             tile.color = Tile.EMPTY;
-            tile.clicked = 0;
+            tile.numOrbs = 0;
 
             if (leftTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int leftColumn = currentColumn - 1;
