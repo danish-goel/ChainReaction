@@ -14,9 +14,9 @@ import com.badlogic.gdx.math.Rectangle;
  */
 public class Tile {
 
-    static final int EMPTY	=-1;
-    static final int RED    = 0;
+    static final int EMPTY	=0;
     static final int BLUE   = 1;
+    static final int RED    = -1;
 
     int player = EMPTY;
 
