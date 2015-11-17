@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class ChainReaction extends ApplicationAdapter {
     SpriteBatch batch;
@@ -16,11 +15,14 @@ public class ChainReaction extends ApplicationAdapter {
     Tile[][] tiles;
 
 
-    int WIDTH;
-    int HEIGHT;
-    int tileSize;
+    int screenWidth;
+    int screenHeight;
+    int screentileSize;
     int boardOffset;
     int boardHeight;
+
+    int boardRows=5;
+    int boardCols=5;
 
     private Texture img;
     private Sprite sprite;
@@ -30,32 +32,32 @@ public class ChainReaction extends ApplicationAdapter {
 
     @Override
     public void create() {
-        WIDTH = Gdx.graphics.getWidth();
-        HEIGHT = Gdx.graphics.getHeight();
-        tiles = new Tile[5][5];
-        tileSize = WIDTH / tiles[0].length;
-        boardOffset = (HEIGHT - tileSize * tiles.length) / 2;
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
+        tiles = new Tile[boardRows][boardCols];
+        screentileSize = screenWidth / boardCols;
+        boardOffset = (screenHeight - screentileSize * boardRows) / 2;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, WIDTH, HEIGHT);
+        camera.setToOrtho(false, screenWidth, screenHeight);
         batch = new SpriteBatch();
 
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[0].length; col++) {
-                if ((row == 0 && col == 0) || (row == 0 && col == tiles.length) || (col == 0 && row == tiles.length) || (col == tiles.length && row == tiles.length)) {
-                    tiles[row][col] = new Tile(col * tileSize + tileSize / 2,
-                            row * tileSize + boardOffset + tileSize / 2,
-                            tileSize,
-                            tileSize, 2);
-                } else if (row == 0 || row == tiles.length - 1 || col == 0 || col == tiles.length) {
-                    tiles[row][col] = new Tile(col * tileSize + tileSize / 2,
-                            row * tileSize + boardOffset + tileSize / 2,
-                            tileSize,
-                            tileSize, 3);
+        for (int row = 0; row < boardRows; row++) {
+            for (int col = 0; col < boardCols; col++) {
+                if ((row == 0 && col == 0) || (row == 0 && col == boardCols-1) || (col == 0 && row == boardRows-1) || (col == boardCols-1 && row == boardRows-1)) {
+                    tiles[row][col] = new Tile(col * screentileSize + screentileSize / 2,
+                            row * screentileSize + boardOffset + screentileSize / 2,
+                            screentileSize,
+                            screentileSize, 2);
+                } else if (row == 0 || row == boardRows - 1 || col == 0 || col == boardCols-1) {
+                    tiles[row][col] = new Tile(col * screentileSize + screentileSize / 2,
+                            row * screentileSize + boardOffset + screentileSize / 2,
+                            screentileSize,
+                            screentileSize, 3);
                 } else {
-                    tiles[row][col] = new Tile(col * tileSize + tileSize / 2,
-                            row * tileSize + boardOffset + tileSize / 2,
-                            tileSize,
-                            tileSize, 4);
+                    tiles[row][col] = new Tile(col * screentileSize + screentileSize / 2,
+                            row * screentileSize + boardOffset + screentileSize / 2,
+                            screentileSize,
+                            screentileSize, 4);
                 }
 
             }
@@ -73,8 +75,8 @@ public class ChainReaction extends ApplicationAdapter {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[0].length; col++) {
+        for (int row = 0; row < boardRows; row++) {
+            for (int col = 0; col < boardCols; col++) {
                 tiles[row][col].render(batch);
             }
         }
@@ -95,8 +97,8 @@ public class ChainReaction extends ApplicationAdapter {
     public int checkWinner(int color) {
         final int noWin = 0;
         final int Win = 1;
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[0].length; col++) {
+        for (int row = 0; row < boardRows; row++) {
+            for (int col = 0; col < boardCols; col++) {
                 Tile tile = tiles[row][col];
                 if (tile.color != color) {
                     return noWin;
