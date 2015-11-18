@@ -20,6 +20,12 @@ public class InputListener extends InputAdapter {
         coord.set(screenX, screenY, 0);
         chainreaction.camera.unproject(coord);
 
+        playTurnOnTouch();
+
+        return super.touchDown(screenX, screenY, pointer, button);
+    }
+
+    public void playTurnOnTouch() {
         for (int row = 0; row < chainreaction.boardRows; row++) {
             for (int col = 0; col < chainreaction.boardCols; col++) {
                 Tile tile = chainreaction.tiles[row][col];
@@ -40,8 +46,6 @@ public class InputListener extends InputAdapter {
                 }
             }
         }
-
-        return super.touchDown(screenX, screenY, pointer, button);
     }
 
     public void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
