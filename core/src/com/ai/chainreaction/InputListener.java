@@ -26,6 +26,7 @@ public class InputListener extends InputAdapter {
 
         if (!chainreaction.gameOver)
             playTurnOnTouch();
+        //dbshjsdb
         Gdx.app.log("moves", ""+chainreaction.moves);
 
         return super.touchDown(screenX, screenY, pointer, button);

@@ -98,6 +98,8 @@ public class MiniMax {
 
     int getHeuristic(Tile[][] tiles, int row, int col) {
 
+        //bbvfdvdf
+
         return 0;
     }
 
