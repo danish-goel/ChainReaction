@@ -58,8 +58,8 @@ public class InputListener extends InputAdapter {
 
     void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
 
-        Queue<TileCoordinates> tilesToBeClicked = new LinkedList<TileCoordinates>();
-        TileCoordinates start = new TileCoordinates(currentRow, currentColumn);
+        Queue<tileCoordinates> tilesToBeClicked = new LinkedList<tileCoordinates>();
+        tileCoordinates start = new tileCoordinates(currentRow, currentColumn);
         tilesToBeClicked.add(start);
         Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
         int count = 0;
@@ -75,10 +75,10 @@ public class InputListener extends InputAdapter {
             }
             count++;
 
-            TileCoordinates clickThisTileCoordinates = tilesToBeClicked.remove();
+            tileCoordinates clickThisTileCoordinates = tilesToBeClicked.remove();
 //            Gdx.app.log(clickThisTileCoordinates.getRow()+" "+clickThisTileCoordinates.col+ "Size", ""+tilesToBeClicked.size());
             Tile clickThisTile = chainreaction.tiles[clickThisTileCoordinates.row][clickThisTileCoordinates.col];
-            Queue<TileCoordinates> returnedTiles = explodedTiles(clickThisTile, color, clickThisTileCoordinates.row, clickThisTileCoordinates.col, totalRows, totalColumns);
+            Queue<tileCoordinates> returnedTiles = explodedTiles(clickThisTile, color, clickThisTileCoordinates.row, clickThisTileCoordinates.col, totalRows, totalColumns);
             if (returnedTiles.size() > 0) {
                 tilesToBeClicked.addAll(returnedTiles);
 
@@ -87,11 +87,11 @@ public class InputListener extends InputAdapter {
         Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
     }
 
-    Queue<TileCoordinates> explodedTiles(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+    Queue<tileCoordinates> explodedTiles(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
         Gdx.app.log("explode", ChainReaction.debug + " debug");
         tile.color = color;
         tile.numOrbs++;
-        Queue<TileCoordinates> tilesToBeClicked = new LinkedList<TileCoordinates>();
+        Queue<tileCoordinates> tilesToBeClicked = new LinkedList<tileCoordinates>();
         if (tile.numOrbs >= tile.threshold) {
             tile.explode = true;
             tile.color = Tile.EMPTY;
@@ -100,28 +100,28 @@ public class InputListener extends InputAdapter {
             if (leftTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int leftColumn = currentColumn - 1;
 //                Tile leftTile = chainreaction.tiles[currentRow][leftColumn];
-                TileCoordinates leftTile = new TileCoordinates(currentRow, leftColumn);
+                tileCoordinates leftTile = new tileCoordinates(currentRow, leftColumn);
                 tilesToBeClicked.add(leftTile);
 //                tileClicked(leftTile, color, currentRow, leftColumn, totalRows, totalColumns);
             }
             if (rightTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int rightColumn = currentColumn + 1;
 //                Tile rightTile = chainreaction.tiles[currentRow][rightColumn];
-                TileCoordinates rightTile = new TileCoordinates(currentRow, rightColumn);
+                tileCoordinates rightTile = new tileCoordinates(currentRow, rightColumn);
                 tilesToBeClicked.add(rightTile);
 //                tileClicked(rightTile, color, currentRow, rightColumn, totalRows, totalColumns);
             }
             if (topTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int topRow = currentRow - 1;
 //                Tile topTile = chainreaction.tiles[topRow][currentColumn];
-                TileCoordinates topTile = new TileCoordinates(topRow, currentColumn);
+                tileCoordinates topTile = new tileCoordinates(topRow, currentColumn);
                 tilesToBeClicked.add(topTile);
 //                tileClicked(topTile, color, topRow, currentColumn, totalRows, totalColumns);
             }
             if (bottomTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int bottomRow = currentRow + 1;
 //                Tile bottomTile = chainreaction.tiles[bottomRow][currentColumn];
-                TileCoordinates bottomTile = new TileCoordinates(bottomRow, currentColumn);
+                tileCoordinates bottomTile = new tileCoordinates(bottomRow, currentColumn);
                 tilesToBeClicked.add(bottomTile);
 //                tileClicked(bottomTile, color, bottomRow, currentColumn, totalRows, totalColumns);
             }

@@ -28,12 +28,12 @@ public class MiniMax {
         List<TileData> filledTiles = storeGrid(tiles);
 
         //check all the places where you can place the Orb
-        Map<Tile, TileCoordinates> orbPlacements = new HashMap<Tile, TileCoordinates>();
+        Map<Tile, tileCoordinates> orbPlacements = new HashMap<Tile, tileCoordinates>();
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numColumns; col++) {
                 Tile til = tiles[row][col];
                 if (til.color == Tile.EMPTY || til.color == color) {
-                    TileCoordinates c = new TileCoordinates(row,col);
+                    tileCoordinates c = new tileCoordinates(row,col);
                     orbPlacements.put(til, c);
                 }
             }
@@ -50,7 +50,7 @@ public class MiniMax {
 
             //base case when the depth is reached
             if (currentDepth == depthLimit) {
-                TileCoordinates c = orbPlacements.get(tile);
+                tileCoordinates c = orbPlacements.get(tile);
                 return getHeuristic(tiles, c.row, c.col);
             }
 
