@@ -3,6 +3,10 @@ package com.ai.chainreaction;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
+
 /**
  * Created by Danish on 14-Nov-15.
  */
@@ -48,9 +52,27 @@ public class InputListener extends InputAdapter {
         }
     }
 
-    public void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+    void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+
+        Queue<tileCoordinates> tilesToBeClicked=new LinkedList<tileCoordinates>();
+        tileCoordinates start=new tileCoordinates(currentRow,currentColumn);
+        tilesToBeClicked.add(start);
+        while (!tilesToBeClicked.isEmpty())
+        {
+            tileCoordinates clickThisTileCoordinates=tilesToBeClicked.remove();
+            Tile clickThisTile = chainreaction.tiles[clickThisTileCoordinates.row][clickThisTileCoordinates.col];
+            Queue<tileCoordinates> returnedTiles=explodedTiles(clickThisTile, color,clickThisTileCoordinates.row,clickThisTileCoordinates.col, totalRows, totalColumns);
+            if(returnedTiles.size()>0)
+            {
+                tilesToBeClicked.addAll(returnedTiles);
+            }
+        }
+    }
+
+    Queue<tileCoordinates> explodedTiles(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
         tile.color = color;
         tile.numOrbs++;
+        Queue<tileCoordinates> tilesToBeClicked=new LinkedList<tileCoordinates>();
         if (tile.numOrbs == tile.threshold) {
             tile.explode = true;
             tile.color = Tile.EMPTY;
@@ -58,26 +80,34 @@ public class InputListener extends InputAdapter {
 
             if (leftTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int leftColumn = currentColumn - 1;
-                Tile leftTile = chainreaction.tiles[currentRow][leftColumn];
-                tileClicked(leftTile, color, currentRow, leftColumn, totalRows, totalColumns);
+//                Tile leftTile = chainreaction.tiles[currentRow][leftColumn];
+                tileCoordinates leftTile=new tileCoordinates(currentRow,currentColumn);
+                tilesToBeClicked.add(leftTile);
+//                tileClicked(leftTile, color, currentRow, leftColumn, totalRows, totalColumns);
             }
             if (rightTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int rightColumn = currentColumn + 1;
-                Tile rightTile = chainreaction.tiles[currentRow][rightColumn];
-                tileClicked(rightTile, color, currentRow, rightColumn, totalRows, totalColumns);
+//                Tile rightTile = chainreaction.tiles[currentRow][rightColumn];
+                tileCoordinates rightTile=new tileCoordinates(currentRow,rightColumn);
+                tilesToBeClicked.add(rightTile);
+//                tileClicked(rightTile, color, currentRow, rightColumn, totalRows, totalColumns);
             }
             if (topTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int topRow = currentRow - 1;
-                Tile topTile = chainreaction.tiles[topRow][currentColumn];
-                tileClicked(topTile, color, topRow, currentColumn, totalRows, totalColumns);
+//                Tile topTile = chainreaction.tiles[topRow][currentColumn];
+                tileCoordinates topTile=new tileCoordinates(topRow,currentColumn);
+                tilesToBeClicked.add(topTile);
+//                tileClicked(topTile, color, topRow, currentColumn, totalRows, totalColumns);
             }
             if (bottomTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int bottomRow = currentRow + 1;
-                Tile bottomTile = chainreaction.tiles[bottomRow][currentColumn];
-                tileClicked(bottomTile, color, bottomRow, currentColumn, totalRows, totalColumns);
+//                Tile bottomTile = chainreaction.tiles[bottomRow][currentColumn];
+                tileCoordinates bottomTile=new tileCoordinates(bottomRow,currentColumn);
+                tilesToBeClicked.add(bottomTile);
+//                tileClicked(bottomTile, color, bottomRow, currentColumn, totalRows, totalColumns);
             }
         }
-
+        return tilesToBeClicked;
     }
 
     public boolean leftTileExists(int currentRow, int currentColumn, int totalRows, int totalColumns) {

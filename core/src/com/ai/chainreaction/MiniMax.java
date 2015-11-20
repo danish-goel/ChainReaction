@@ -33,9 +33,7 @@ public class MiniMax {
             for (int col = 0; col < numColumns; col++) {
                 Tile til = tiles[row][col];
                 if (til.color == Tile.EMPTY || til.color == color) {
-                    tileCoordinates c = new tileCoordinates();
-                    c.row = row;
-                    c.col = col;
+                    tileCoordinates c = new tileCoordinates(row,col);
                     orbPlacements.put(til, c);
                 }
             }
@@ -101,11 +99,6 @@ public class MiniMax {
     int getHeuristic(Tile[][] tiles, int row, int col) {
 
         return 0;
-    }
-
-    public class tileCoordinates {
-        int row;
-        int col;
     }
 
     public class TileData {
