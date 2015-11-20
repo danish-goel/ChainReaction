@@ -14,8 +14,8 @@ public class Utilities {
             this.col = col;
         }
 
-        int row;
-        int col;
+        public int row;
+        public int col;
     }
 
     public static List<Pos> getPlayablePositions(Tile[][] grid, int turn) {

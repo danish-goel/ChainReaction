@@ -14,11 +14,11 @@ import java.util.HashMap;
  */
 public class Tile {
 
-    static final int EMPTY = 0;
-    static final int BLUE = 1;
-    static final int RED = -1;
+    public static final int EMPTY = 0;
+    public static final int BLUE = 1;
+    public static final int RED = -1;
 
-    int player = EMPTY;
+    public int player = EMPTY;
 
     TextureRegion tile;
     TextureRegion red;
@@ -28,8 +28,8 @@ public class Tile {
     TextureRegion red3;
     TextureRegion blue3;
 
-    float x;
-    float y;
+    public float x;
+    public float y;
     float width;
     float height;
 
@@ -37,7 +37,6 @@ public class Tile {
     int color;
     boolean explode = false;
     int numOrbs;
-
 
     HashMap<String, TextureAtlas> atlases;
     Rectangle rectangle = new Rectangle();

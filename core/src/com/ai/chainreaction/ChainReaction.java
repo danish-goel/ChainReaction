@@ -1,6 +1,5 @@
 package com.ai.chainreaction;
 
-import com.ai.chainreaction.Utilities.Pos;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,7 +13,7 @@ public class ChainReaction extends ApplicationAdapter {
     SpriteBatch batch;
     OrthographicCamera camera;
 
-    Tile[][] tiles;
+    public Tile[][] tiles;
 
     int screenWidth;
     int screenHeight;
@@ -22,22 +21,29 @@ public class ChainReaction extends ApplicationAdapter {
     int boardOffset;
     int boardHeight;
 
-    int boardRows = 4;
-    int boardCols = 4;
+    int boardRows = 5;
+    int boardCols = 5;
 
     private Texture img;
     private Sprite sprite;
 
-    boolean turn = true;
-    boolean gameOver = false;
+    public int turn = Tile.RED;
+    public boolean gameOver = false;
 
-    InputListener inputListener;
+    public InputListener inputListener;
     float simulationIntervalTimerBetweenTurns = (float) 0;
 
-    public static int debug=0;
+    public static int debug = 0;
+    GameCallback gc;
+    int moves;
+
+    public ChainReaction(GameCallback gc) {
+        this.gc = gc;
+    }
 
     @Override
     public void create() {
+        moves = 0;
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
         tiles = new Tile[boardRows][boardCols];
@@ -87,37 +93,6 @@ public class ChainReaction extends ApplicationAdapter {
     int numMoves;
     Timer.Task myTimerTask;
 
-    public void startSimulating() {
-        numMoves = 0;
-        turn2 = Tile.RED;
-        turn = false;
-        myTimerTask = new Timer.Task() {
-            @Override
-            public void run() {
-                programaticallyMove(turn2);
-                numMoves++;
-                turn2 *= -1;
-                if (numMoves < 2 || checkWinnerSimple() == Tile.EMPTY) {
-                    debug++;
-                    Timer.schedule(myTimerTask, simulationIntervalTimerBetweenTurns);
-                }
-                else
-                {
-                    gameOver=true;//game over
-                }
-            }
-        };
-
-        Timer.schedule(myTimerTask, simulationIntervalTimerBetweenTurns);
-    }
-
-    public void programaticallyMove(int player) {
-        Pos pos = RandomTemp.getNextCoord(tiles, player);
-        Tile tile = tiles[pos.row][pos.col];
-        tile.player = player;
-        inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
-    }
-
     @Override
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -144,6 +119,8 @@ public class ChainReaction extends ApplicationAdapter {
 
 
     public int checkWinnerSimple() {
+        if (moves < 2)
+            return Tile.EMPTY;
         boolean foundRed = false;
         boolean foundBlue = false;
         for (int row = 0; row < boardRows; row++) {
@@ -162,6 +139,10 @@ public class ChainReaction extends ApplicationAdapter {
         if (foundRed)
             return Tile.RED;
         return Tile.EMPTY;
+    }
+
+    public interface GameCallback {
+        public void gameOver();
     }
 
 }
