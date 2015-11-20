@@ -32,7 +32,9 @@ public class ChainReaction extends ApplicationAdapter {
     boolean gameOver = false;
 
     InputListener inputListener;
-    float simulationIntervalTimerBetweenTurns = 1;
+    float simulationIntervalTimerBetweenTurns = (float) 0;
+
+    public static int debug=0;
 
     @Override
     public void create() {
@@ -72,14 +74,13 @@ public class ChainReaction extends ApplicationAdapter {
         img = new Texture("gameOver.png");
         sprite = new Sprite(img);
 
-        simulationIntervalTimerBetweenTurns = (float) .5;
-        //TODO comment the following line to run it normally
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                startSimulating();
-            }
-        }, 2);
+//        //TODO comment the following line to run it normally
+//        Timer.schedule(new Timer.Task() {
+//            @Override
+//            public void run() {
+//                startSimulating();
+//            }
+//        }, 2);
     }
 
     int turn2;
@@ -96,10 +97,17 @@ public class ChainReaction extends ApplicationAdapter {
                 programaticallyMove(turn2);
                 numMoves++;
                 turn2 *= -1;
-                if (numMoves < 2 || checkWinnerSimple() == Tile.EMPTY)
+                if (numMoves < 2 || checkWinnerSimple() == Tile.EMPTY) {
+                    debug++;
                     Timer.schedule(myTimerTask, simulationIntervalTimerBetweenTurns);
+                }
+                else
+                {
+                    gameOver=true;//game over
+                }
             }
         };
+
         Timer.schedule(myTimerTask, simulationIntervalTimerBetweenTurns);
     }
 
@@ -134,19 +142,6 @@ public class ChainReaction extends ApplicationAdapter {
         img.dispose();
     }
 
-    public int checkWinner(int color) {
-        final int noWin = 0;
-        final int Win = 1;
-        for (int row = 0; row < boardRows; row++) {
-            for (int col = 0; col < boardCols; col++) {
-                Tile tile = tiles[row][col];
-                if (tile.color != color) {
-                    return noWin;
-                }
-            }
-        }
-        return Win;
-    }
 
     public int checkWinnerSimple() {
         boolean foundRed = false;
