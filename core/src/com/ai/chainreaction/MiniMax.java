@@ -1,9 +1,10 @@
 package com.ai.chainreaction;
 
+import com.ai.chainreaction.Utilities.Pos;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by Danish on 17-Nov-15.
@@ -14,68 +15,92 @@ public class MiniMax {
     int depthLimit;
     int numRows;
     int numColumns;
+    Pos myBestPos;
 
-    public MiniMax(Tile[][] tiles, int depthLimit) {
+    ChainReaction chainReaction;
+
+    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit) {
+        this.chainReaction = chainReaction;
         this.tiles = tiles;
         this.depthLimit = depthLimit;
         numRows = tiles.length;
         numColumns = tiles[0].length;
+        myBestPos= new Pos(-1, -1);
     }
 
+    public Pos getBestMove(int color) {
+        traverseMinimaxTree(0, true, color);
+        return myBestPos;
+    }
 
-    int getBestMove(Tile[][] tiles, int currentDepth, boolean Max, int color) {
+    int traverseMinimaxTree(int currentDepth, boolean Max, int color) {
 
+        int returnValue = 0;
+
+        //base case when the depth is reached
+        if (currentDepth == depthLimit) {
+            //TileCoordinate c = orbPlacements.get(tile);
+            return getHeuristic(tiles, color);  //return getHeuristic(tiles, c.row, c.col); // TODO DG check and remove this comment
+        }
+
+        // back up grid
         List<TileData> filledTiles = storeGrid(tiles);
 
         //check all the places where you can place the Orb
-        Map<Tile, TileCoordinate> orbPlacements = new HashMap<Tile, TileCoordinate>();
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numColumns; col++) {
-                Tile til = tiles[row][col];
-                if (til.color == Tile.EMPTY || til.color == color) {
-                    TileCoordinate c = new TileCoordinate(row, col);
-                    orbPlacements.put(til, c);
-                }
-            }
-        }
+        List<Pos> listPlayablePostitions = Utilities.getPlayablePositions(tiles, color);
+//        Map<Tile, TileCoordinate> orbPlacements = new HashMap<Tile, TileCoordinate>();
+//        for (int row = 0; row < numRows; row++) {
+//            for (int col = 0; col < numColumns; col++) {
+//                Tile tile = tiles[row][col];
+//                if (tile.color == Tile.EMPTY || tile.color == color) {
+//                    TileCoordinate c = new TileCoordinate(row, col);
+//                    orbPlacements.put(tile, c);
+//                }
+//            }
+//        }
 
         int min = 0;
         int max = 0;
         if (Max) {
-            max = -100000;    //set to -infinity
+            returnValue = max = -100000;    //set to -infinity
         } else {
-            min = 100000; //set to +infinity
+            returnValue = min = 100000; //set to +infinity
         }
-        for (Tile tile : orbPlacements.keySet()) {
+        //for (Tile tile : orbPlacements.keySet()) {
+        for (Pos playablePos : listPlayablePostitions) {
 
-            //base case when the depth is reached
-            if (currentDepth == depthLimit) {
-                TileCoordinate c = orbPlacements.get(tile);
-                return getHeuristic(tiles, c.row, c.col);
-            }
+            //modifications
+            Tile tile = tiles[playablePos.row][playablePos.col];
+            //chainReaction.inputListener.tileClicked(tile, color, (int) tile.x, (int) tile.y, chainReaction.boardRows, chainReaction.boardCols);
+            chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
 
-            //-------------------- revert grid
-            //at position of tile put the orb
-            revertGrid(tiles, filledTiles);
-
-
-            int ret = getBestMove(tiles, currentDepth + 1, !Max, -color); //invert the color and minMax node and call for next depth
+            //recursion
+            int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color); //invert the color and minMax node and call for next depth
             if (Max) {
                 if (ret > max) {
                     max = ret;
+                    returnValue = ret;
+                    if(currentDepth == 0) {
+                        myBestPos.row = playablePos.row;
+                        myBestPos.col = playablePos.col;
+                    }
                 }
             } else {
                 if (ret < min) {
                     min = ret;
+                    returnValue = ret;
+                    if(currentDepth == 0) {
+                        myBestPos.row = playablePos.row;
+                        myBestPos.col = playablePos.col;
+                    }
                 }
             }
 
-
-            //--------------------
-            //reset the grid
+            //revert the grid
+            revertGrid(tiles, filledTiles);
         }
 
-        return 0;
+        return returnValue;
     }
 
     private void revertGrid(Tile[][] grid, List<TileData> filledTiles) {
@@ -97,51 +122,41 @@ public class MiniMax {
 
     int getHeuristic(Tile[][] tiles, int color) {
 
-        //bbvfdvdf
         int myOrbs = 0;
         int enemyOrbs = 0;
         int score = 0;
-        boolean vurnerable=true;
+        boolean vurnerable = true;
         for (int row = 0; row < tiles.length; row++) {
             for (int col = 0; col < tiles[0].length; col++) {
                 if (color == Tile.BLUE) {
                     myOrbs++;
                     for (int i = -1; i <= 1; i++) {
-                        for (int j = -1;j<=1;j++ )
-                        {
-                            if(i==j)
+                        for (int j = -1; j <= 1; j++) {
+                            if (i == j)
                                 continue;
-                            if(i!=0 || j!=0)
+                            if (i != 0 || j != 0)
                                 continue;
-                            if(checkExistance(tiles.length,tiles[0].length,row+i,col+j))
-                            {
-                                Tile tile = tiles[row+i][col+j];
-                                if(tile.color!=color)   //surrounding enemy neighbours
+                            if (Tile.checkExistance(tiles.length, tiles[0].length, row + i, col + j)) {
+                                Tile tile = tiles[row + i][col + j];
+                                if (tile.color != color)   //surrounding enemy neighbours
                                 {
-                                    if(tile.numOrbs==tile.threshold-1)
-                                    {
-                                        score-=5-tile.threshold;
-                                        vurnerable=false;
+                                    if (tile.numOrbs == tile.threshold - 1) {
+                                        score -= 5 - tile.threshold;
+                                        vurnerable = false;
                                     }
                                 }
                             }
                         }
                     }
 
-                    if(vurnerable)
-                    {
-                        Tile currentTile=tiles[row][col];
-                        if(currentTile.threshold==3)
-                        {
-                            score+=2;
-                        }
-                        else if(currentTile.threshold==2)
-                        {
-                            score+=3;
-                        }
-                        else if(currentTile.numOrbs+1==currentTile.threshold)
-                        {
-                            score+=2;
+                    if (vurnerable) {
+                        Tile currentTile = tiles[row][col];
+                        if (currentTile.threshold == 3) {
+                            score += 2;
+                        } else if (currentTile.threshold == 2) {
+                            score += 3;
+                        } else if (currentTile.numOrbs + 1 == currentTile.threshold) {
+                            score += 2;
                         }
                     }
                 } else if (color == Tile.RED) {
@@ -151,6 +166,9 @@ public class MiniMax {
 
             }
         }
+
+        score += chains(tiles, color);
+
         if (myOrbs > 1 && enemyOrbs == 0) {
             score += 1000;    //win case
         } else if (myOrbs == 0 && enemyOrbs > 1) {
@@ -161,19 +179,56 @@ public class MiniMax {
         return score;
     }
 
-    public int  chains(Tile[][] tiles)
-    {
-        int numRows=tiles.length;
-        int numColumns=tiles[0].length;
-        boolean visited[][]=new boolean[numRows][numColumns];
-        for(int i=0;i<numRows;i++)
-        {
-            for(int j=0;j<numColumns;j++)
-            {
-                Tile tile = tiles[i][j];
+    public int chains(Tile[][] tiles, int color) {
+        //init vars
+        int answer = 0;
+        int numRows = tiles.length;
+        int numColumns = tiles[0].length;
+        boolean visited[][] = new boolean[numRows][numColumns];
+        //init visited
+        for (int i = 0; i < numRows; i++)
+            for (int j = 0; j < numColumns; j++)
+                visited[i][j] = false;
 
+        // main code
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numColumns; j++) {
+                //for each tile
+                Tile tile = tiles[i][j];
+                //if my cell is unstable - need to count this chain
+                if (tile.numOrbs == tile.threshold - 1 && tile.color == color) {
+                    //init dfs
+                    int count = 0;
+                    Stack<Pos> stack = new Stack();
+                    stack.add(new Pos(i, j));
+                    visited[i][j] = true;
+                    //dfs loop
+                    while (!stack.empty()) {
+                        count++;
+                        Pos pos = stack.pop();
+                        //iterating over neighbors
+                        for (Pos eachPos : Tile.get4Neighbours(numRows, numColumns, pos.row, pos.col)) {
+                            //visited
+                            if (visited[eachPos.row][eachPos.col])
+                                continue;
+                            visited[eachPos.row][eachPos.col] = true;
+
+                            //add tile if unstable
+                            tile = tiles[eachPos.row][eachPos.col];
+                            if (tile.numOrbs == tile.threshold - 1 && tile.color == color) {
+                                stack.add(eachPos);
+                            }
+                        }
+                    }
+
+                    //TODO chain returning unstable cells (size>1), might be changed to include ememy unstable cells
+                    if (count > 1)
+                        answer += count;
+
+                }
             }
         }
+        return answer;
     }
 
     public class TileData {
@@ -190,7 +245,7 @@ public class MiniMax {
         }
     }
 
-    public List<TileData> storeGrid(Tile[][] grid) {
+    private List<TileData> storeGrid(Tile[][] grid) {
         List<TileData> filledTiles = new ArrayList<TileData>();
         int rows = grid.length;
         int cols = grid[0].length;
@@ -204,14 +259,5 @@ public class MiniMax {
         }
         return filledTiles;
     }
-
-    public boolean checkExistance(int rows, int cols, int x, int y) {
-        if (x < 0 || x >= rows)
-            return false;
-        if (y < 0 || y >= cols)
-            return false;
-        return true;
-    }
-
 
 }

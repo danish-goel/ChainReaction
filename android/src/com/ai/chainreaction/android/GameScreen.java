@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
+import com.ai.chainreaction.MiniMax;
 import com.ai.chainreaction.RandomTemp;
 import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
@@ -39,7 +40,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         //TODO shift to activity gameover from class gameover
         numMoves++;
         ChainReaction.debug++;
-        programaticallyMove(turn);
+        programaticallyMoveRandom(turn);
         if(!cr.gameOver)
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -56,7 +57,13 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         recur();
     }
 
-    public void programaticallyMove(int player) {
+    public void programaticallyMoveMiniMax(int player) {
+        MiniMax miniMax = new MiniMax(cr , cr.tiles, 3);
+        Utilities.Pos pos = miniMax.getBestMove(turn);
+        programaticallyMove(player, pos.row, pos.col);
+    }
+
+    public void programaticallyMoveRandom(int player) {
         Utilities.Pos pos = RandomTemp.getNextCoord(cr.tiles, player);
         programaticallyMove(player,pos.row,pos.col);
     }

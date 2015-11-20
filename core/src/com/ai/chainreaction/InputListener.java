@@ -78,6 +78,8 @@ public class InputListener extends InputAdapter {
 
             TileCoordinate clickThisTileCoordinate = tilesToBeClicked.remove();
 //            Gdx.app.log(clickThisTileCoordinate.getRow()+" "+clickThisTileCoordinate.col+ "Size", ""+tilesToBeClicked.size());
+            Gdx.app.log("minimax", "x"+tile.x+ "y"+tile.y);
+            Gdx.app.log("minimax", "x"+clickThisTileCoordinate.row+ "y"+clickThisTileCoordinate.col);
             Tile clickThisTile = chainreaction.tiles[clickThisTileCoordinate.row][clickThisTileCoordinate.col];
             Queue<TileCoordinate> returnedTiles = explodedTiles(clickThisTile, color, clickThisTileCoordinate.row, clickThisTileCoordinate.col, totalRows, totalColumns);
             if (returnedTiles.size() > 0) {

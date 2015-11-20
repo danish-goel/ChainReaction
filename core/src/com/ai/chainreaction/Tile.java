@@ -1,12 +1,15 @@
 package com.ai.chainreaction;
 
+import com.ai.chainreaction.Utilities.Pos;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -98,6 +101,30 @@ public class Tile {
     public boolean touched(float x, float y) {
         rectangle.set(this.x - width / 2, this.y - height / 2, width, height);
         return rectangle.contains(x, y);
-
     }
+
+    public static List<Pos> get4Neighbours(int rows, int cols, int x, int y) {
+        List<Pos> list = new ArrayList<Pos>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == j)
+                    continue;
+                if (i != 0 || j != 0)
+                    continue;
+                if (checkExistance(rows, cols, x + i, y + j)) {
+                    list.add(new Pos(x + i, y + j));
+                }
+            }
+        }
+        return list;
+    }
+
+    public static boolean checkExistance(int rows, int cols, int x, int y) {
+        if (x < 0 || x >= rows)
+            return false;
+        if (y < 0 || y >= cols)
+            return false;
+        return true;
+    }
+
 }
