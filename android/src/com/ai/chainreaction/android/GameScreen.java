@@ -11,70 +11,70 @@ import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen extends AndroidApplication implements ChainReaction.GameCallback {
 
-    ChainReaction cr;
-//    int grid[][];
+    ChainReaction chainReaction;
+
+    //    int grid[][];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        cr = new com.ai.chainreaction.ChainReaction(this);
-        initialize(cr, config);
-//        grid=new int[cr.boardRows][cr.boardCols];
-//        initalizeGrid(cr.tiles);
+        chainReaction = new com.ai.chainreaction.ChainReaction(this);
+        initialize(chainReaction, config);
+//        grid=new int[chainReaction.boardRows][chainReaction.boardCols];
+//        initalizeGrid(chainReaction.tiles);
         //Toast.makeText(GameScreen.this, "abcd", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startSimulating();
             }
-        },1000);
+        }, 1000);
     }
 
     int numMoves;
     int turn;
+    static int myTurn = 1;
 
-
-    public void recur()
-    {
+    public void recur() {
         numMoves++;
         ChainReaction.debug++;
         programaticallyMoveMiniMax(turn);
+//        myTurn *= -1;
 //        programaticallyMoveRandom(turn);
-        if(!cr.gameOver)
+        if (!chainReaction.gameOver)
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     recur();
                 }
-            },200);
+            }, 200);
     }
 
     public void startSimulating() {
         numMoves = 0;
         turn = Tile.RED;
-        cr.turn = turn;
+        chainReaction.turn = turn;
         recur();
     }
 
     public void programaticallyMoveMiniMax(int player) {
-        MiniMax miniMax = new MiniMax(cr , cr.tiles, 3);
-        Utilities.Pos pos = miniMax.getBestMove(turn);
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 2);
+        Utilities.Pos pos = miniMax.getBestMove(player);
         programaticallyMove(player, pos.row, pos.col);
     }
 
     public void programaticallyMoveRandom(int player) {
-        Utilities.Pos pos = RandomTemp.getNextCoord(cr.tiles, player);
-        programaticallyMove(player,pos.row,pos.col);
+        Utilities.Pos pos = RandomTemp.getNextCoord(chainReaction.tiles, player);
+        programaticallyMove(player, pos.row, pos.col);
     }
 
     public void programaticallyMove(int player, int x, int y) {
-        Tile tile = cr.tiles[x][y];
+        Tile tile = chainReaction.tiles[x][y];
         tile.player = player;
-        cr.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
+        chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
     }
 
     @Override

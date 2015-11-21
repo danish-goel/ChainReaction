@@ -21,8 +21,8 @@ public class ChainReaction extends ApplicationAdapter {
     int boardOffset;
     int boardHeight;
 
-    public int boardRows = 5;
-    public int boardCols = 5;
+    public int boardRows = 4;
+    public int boardCols = 4;
 
     private Texture img;
     private Sprite sprite;

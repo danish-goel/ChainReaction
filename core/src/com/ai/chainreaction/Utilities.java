@@ -25,8 +25,8 @@ public class Utilities {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Tile tile = grid[i][j];
-                if(tile.color==turn || tile.color==Tile.EMPTY)
-                    listPlayablePositions.add(new Pos(i,j));
+                if (tile.color == turn || tile.color == Tile.EMPTY)
+                    listPlayablePositions.add(new Pos(i, j));
             }
         }
 
@@ -41,9 +41,11 @@ public class Utilities {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 int tile = grid[i][j];
-                int tileTurn = tile / Math.abs(tile);
-                if(tileTurn==turn || tile == Tile.EMPTY)
-                    listPlayablePositions.add(new Pos(i,j));
+                int tileTurn = 0;
+                if (tile != 0)
+                    tileTurn = tile / Math.abs(tile);
+                if (tileTurn == turn || tile == Tile.EMPTY)
+                    listPlayablePositions.add(new Pos(i, j));
             }
         }
 

@@ -129,6 +129,24 @@ public class Tile {
         return true;
     }
 
+    public static int getThreshold(int rows, int cols, int x, int y) {
+        //corner
+        if(x==0 && y==0)
+            return 2;
+        if(x==rows-1 && y==0)
+            return 2;
+        if(x==0 && y==cols-1)
+            return 2;
+        if(x==rows-1 && y==cols-1)
+            return 2;
+
+        //edges
+        if(x==0 || y==0 || x==rows-1 || y==cols-1)
+            return 3;
+
+        return 4;
+    }
+
     public int getNumOrbs() {
         return numOrbs;
     }

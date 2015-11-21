@@ -4,7 +4,9 @@ import com.ai.chainreaction.Utilities.Pos;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -20,6 +22,7 @@ public class MiniMax {
     Pos myBestPos;
 
     ChainReaction chainReaction;
+    static int numTraverseTreeCalls = 0;
 
     public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit) {
         this.chainReaction = chainReaction;
@@ -27,13 +30,13 @@ public class MiniMax {
         this.depthLimit = depthLimit;
         numRows = tiles.length;
         numColumns = tiles[0].length;
-        myBestPos= new Pos(-1, -1);
+        myBestPos = new Pos(-1, -1);
         grid = initalizeGrid(tiles);
     }
 
     public Pos getBestMove(int color) {
         traverseMinimaxTree(0, true, color);
-//        Gdx.app.log("BEST MOVE",myBestPos);
+        Gdx.app.log("BEST MOVE", "ab" + color);
         return myBestPos;
     }
 
@@ -41,9 +44,19 @@ public class MiniMax {
 
         int returnValue = 0;
 
+//        Gdx.app.log("traverse",(numTraverseTreeCalls++)+"");
+
         //base case when the depth is reached
+        if (checkWinnerIfExists(grid) != Tile.EMPTY) {
+            Gdx.app.debug("depth", "" + currentDepth + Max + color);
+            if (Max) {
+                return 100000;    //set to -infinity
+            } else {
+                return -100000; //set to +infinity
+            }
+        }
         if (currentDepth == depthLimit) {
-            return getHeuristic(tiles, color);
+            return getHeuristic(grid, color);
         }
 
         // back up grid
@@ -67,7 +80,7 @@ public class MiniMax {
 //            Tile tile = tiles[playablePos.row][playablePos.col];
             //chainReaction.inputListener.tileClicked(tile, color, (int) tile.x, (int) tile.y, chainReaction.boardRows, chainReaction.boardCols);
 //            chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
-            // TODO put generic array touch here
+            clickTile(color, playablePos.row, playablePos.col, grid.length, grid[0].length);
 
             //recursion
             int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color); //invert the color and minMax node and call for next depth
@@ -75,7 +88,7 @@ public class MiniMax {
                 if (ret > max) {
                     max = ret;
                     returnValue = ret;
-                    if(currentDepth == 0) {
+                    if (currentDepth == 0) {
                         myBestPos.row = playablePos.row;
                         myBestPos.col = playablePos.col;
                     }
@@ -84,7 +97,7 @@ public class MiniMax {
                 if (ret < min) {
                     min = ret;
                     returnValue = ret;
-                    if(currentDepth == 0) {
+                    if (currentDepth == 0) {
                         myBestPos.row = playablePos.row;
                         myBestPos.col = playablePos.col;
                     }
@@ -93,43 +106,36 @@ public class MiniMax {
 
             //revert the grid
 //            revertGrid(tiles, filledTiles);
-            revertGrid(backUpGrid,grid);
+            revertGrid(backUpGrid, grid);
         }
 
         return returnValue;
     }
 
-    public int[][] initalizeGrid(Tile tiles[][])
-    {
+    public int[][] initalizeGrid(Tile tiles[][]) {
         int grid[][] = new int[tiles.length][tiles[0].length];
-        for (int row=0;row<tiles.length;row++)
-        {
-            for (int col=0;col<tiles[0].length;col++)
-            {
-                grid[row][col]=tiles[row][col].getColor()*tiles[row][col].getNumOrbs();
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[0].length; col++) {
+                grid[row][col] = tiles[row][col].getColor() * tiles[row][col].getNumOrbs();
             }
         }
         return grid;
     }
 
-    int[][] copyGrid(int tiles[][])
-    {
-        int newGrid[][]=new int[tiles.length][tiles[0].length];
-        for (int row=0;row<tiles.length;row++)
-        {
-            for (int col=0;col<tiles[0].length;col++)
-            {
-                newGrid[row][col]=tiles[row][col];
+    int[][] copyGrid(int tiles[][]) {
+        int newGrid[][] = new int[tiles.length][tiles[0].length];
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[0].length; col++) {
+                newGrid[row][col] = tiles[row][col];
             }
         }
         return newGrid;
     }
 
-    void revertGrid(int[][] source,int[][] destination)
-    {
-        for (int row=0;row<source.length;row++) {
+    void revertGrid(int[][] source, int[][] destination) {
+        for (int row = 0; row < source.length; row++) {
             for (int col = 0; col < source[0].length; col++) {
-                destination[row][col]=source[row][col];
+                destination[row][col] = source[row][col];
             }
         }
     }
@@ -151,15 +157,16 @@ public class MiniMax {
         }
     }
 
-    int getHeuristic(Tile[][] tiles, int color) {
+    int getHeuristic(int[][] grid, int color) {
 
         int myOrbs = 0;
         int enemyOrbs = 0;
         int score = 0;
         boolean vurnerable = true;
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[0].length; col++) {
-                if (color == Tile.BLUE) {
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[0].length; col++) {
+                int curColor = (int) Math.signum(grid[row][col]);
+                if (curColor == color) {
                     myOrbs++;
                     for (int i = -1; i <= 1; i++) {
                         for (int j = -1; j <= 1; j++) {
@@ -167,12 +174,13 @@ public class MiniMax {
                                 continue;
                             if (i != 0 || j != 0)
                                 continue;
-                            if (Tile.checkExistance(tiles.length, tiles[0].length, row + i, col + j)) {
-                                Tile tile = tiles[row + i][col + j];
-                                if (tile.color != color)   //surrounding enemy neighbours
+                            if (Tile.checkExistance(grid.length, grid[0].length, row + i, col + j)) {
+                                //Tile tile = tiles[row + i][col + j];
+                                int tile = grid[row + i][col + j];
+                                if (Math.signum(tile) == -color)   //surrounding enemy neighbours
                                 {
-                                    if (tile.numOrbs == tile.threshold - 1) {
-                                        score -= 5 - tile.threshold;
+                                    if (Math.abs(tile) == Tile.getThreshold(numRows, numColumns, row + i, col + j) - 1) {
+                                        score -= 5 - Tile.getThreshold(numRows, numColumns, row + i, col + j);
                                         vurnerable = false;
                                     }
                                 }
@@ -181,16 +189,17 @@ public class MiniMax {
                     }
 
                     if (vurnerable) {
-                        Tile currentTile = tiles[row][col];
-                        if (currentTile.threshold == 3) {
+                        int currentTile = grid[row][col];
+                        int threshold = Tile.getThreshold(numRows, numColumns, row, col);
+                        if (threshold == 3) {
                             score += 2;
-                        } else if (currentTile.threshold == 2) {
+                        } else if (threshold == 2) {
                             score += 3;
-                        } else if (currentTile.numOrbs + 1 == currentTile.threshold) {
+                        } else if (Math.abs(currentTile) == threshold - 1) {
                             score += 2;
                         }
                     }
-                } else if (color == Tile.RED) {
+                } else if (curColor == -color) {
                     enemyOrbs++;
                 }
 
@@ -198,7 +207,7 @@ public class MiniMax {
             }
         }
 
-        score += chains(tiles, color);
+        score += chains(grid, color);
 
         if (myOrbs > 1 && enemyOrbs == 0) {
             score += 1000;    //win case
@@ -210,11 +219,12 @@ public class MiniMax {
         return score;
     }
 
-    public int chains(Tile[][] tiles, int color) {
+    public int chains(int[][] grid, int color) {
+        int tiles;
         //init vars
         int answer = 0;
-        int numRows = tiles.length;
-        int numColumns = tiles[0].length;
+        int numRows = grid.length;
+        int numColumns = grid[0].length;
         boolean visited[][] = new boolean[numRows][numColumns];
         //init visited
         for (int i = 0; i < numRows; i++)
@@ -225,9 +235,12 @@ public class MiniMax {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numColumns; j++) {
                 //for each tile
-                Tile tile = tiles[i][j];
+                int tile = grid[i][j];
+                int tileColor = (int) Math.signum(tile);
+                int tileThreshold = Tile.getThreshold(numRows, numColumns, i, j);
+                int tileNumOrbs = Math.abs(tile);
                 //if my cell is unstable - need to count this chain
-                if (tile.numOrbs == tile.threshold - 1 && tile.color == color) {
+                if (tileNumOrbs == tileThreshold - 1 && tileColor == color) {
                     //init dfs
                     int count = 0;
                     Stack<Pos> stack = new Stack();
@@ -245,8 +258,11 @@ public class MiniMax {
                             visited[eachPos.row][eachPos.col] = true;
 
                             //add tile if unstable
-                            tile = tiles[eachPos.row][eachPos.col];
-                            if (tile.numOrbs == tile.threshold - 1 && tile.color == color) {
+                            tile = grid[eachPos.row][eachPos.col];
+                            tileColor = (int) Math.signum(tile);
+                            tileThreshold = Tile.getThreshold(numRows, numColumns, i, j);
+                            tileNumOrbs = Math.abs(tile);
+                            if (tileNumOrbs == tileThreshold - 1 && tileColor == color) {
                                 stack.add(eachPos);
                             }
                         }
@@ -289,6 +305,99 @@ public class MiniMax {
             }
         }
         return filledTiles;
+    }
+
+    void clickTile(int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+
+        Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
+        TileCoordinate start = new TileCoordinate(currentRow, currentColumn);
+        tilesToBeClicked.add(start);
+        Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
+        int count = 0;
+        while (!tilesToBeClicked.isEmpty()) {
+            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
+            if (count % 1 == 0) {
+                if (checkWinnerIfExists(grid) != Tile.EMPTY) {
+                    return;
+                }
+            }
+            count++;
+
+            TileCoordinate clickThisTileCoordinate = tilesToBeClicked.remove();
+            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
+            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
+            Queue<TileCoordinate> returnedTiles = explodedTiles(color, clickThisTileCoordinate.row, clickThisTileCoordinate.col, totalRows, totalColumns);
+            if (returnedTiles.size() > 0) {
+                tilesToBeClicked.addAll(returnedTiles);
+
+            }
+        }
+        Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
+    }
+
+    Queue<TileCoordinate> explodedTiles(int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+        Gdx.app.log("explode", ChainReaction.debug + " debug");
+
+        int cur = grid[currentRow][currentColumn];
+        cur = Math.abs(cur) + 1;
+        cur *= color;
+        grid[currentRow][currentColumn] = cur;
+
+        Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
+
+        int threshold = Tile.getThreshold(totalRows, totalColumns, currentRow, currentColumn);
+        if (Math.abs(cur) >= threshold) {
+            grid[currentRow][currentColumn] = (Math.abs(cur) % threshold) * color;
+
+            if (Tile.checkExistance(totalRows, totalColumns, currentRow, currentColumn - 1)) {
+                int leftColumn = currentColumn - 1;
+                TileCoordinate leftTile = new TileCoordinate(currentRow, leftColumn);
+                tilesToBeClicked.add(leftTile);
+            }
+            if (Tile.checkExistance(totalRows, totalColumns, currentRow, currentColumn + 1)) {
+                int rightColumn = currentColumn + 1;
+                TileCoordinate rightTile = new TileCoordinate(currentRow, rightColumn);
+                tilesToBeClicked.add(rightTile);
+            }
+            if (Tile.checkExistance(totalRows, totalColumns, currentRow - 1, currentColumn)) {
+                int topRow = currentRow - 1;
+                TileCoordinate topTile = new TileCoordinate(topRow, currentColumn);
+                tilesToBeClicked.add(topTile);
+            }
+            if (Tile.checkExistance(totalRows, totalColumns, currentRow + 1, currentColumn)) {
+                int bottomRow = currentRow + 1;
+                TileCoordinate bottomTile = new TileCoordinate(bottomRow, currentColumn);
+                tilesToBeClicked.add(bottomTile);
+            }
+        }
+        return tilesToBeClicked;
+    }
+
+    public int checkWinnerIfExists(int[][] grid) {
+        boolean foundRed = false;
+        boolean foundBlue = false;
+        int count = 0;
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[0].length; col++) {
+                int tile = grid[row][col];
+                if (tile == 0)
+                    continue;
+                count++;
+                if (tile / Math.abs(tile) == Tile.BLUE)
+                    foundBlue = true;
+                if (tile / Math.abs(tile) == Tile.RED)
+                    foundRed = true;
+            }
+        }
+        if (count < 2)
+            return Tile.EMPTY;
+        if (foundBlue && foundRed)
+            return Tile.EMPTY;
+        if (foundBlue)
+            return Tile.BLUE;
+        if (foundRed)
+            return Tile.RED;
+        return Tile.EMPTY;
     }
 
 }
