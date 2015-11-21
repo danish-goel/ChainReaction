@@ -29,6 +29,25 @@ public class Utilities {
                     listPlayablePositions.add(new Pos(i,j));
             }
         }
+
+
+        return listPlayablePositions;
+    }
+
+    public static List<Pos> getPlayablePositions(int[][] grid, int turn) {
+        List<Pos> listPlayablePositions = new ArrayList<Pos>();
+        int rows = grid.length;
+        int cols = grid[0].length;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int tile = grid[i][j];
+                int tileTurn = tile / Math.abs(tile);
+                if(tileTurn==turn || tile == Tile.EMPTY)
+                    listPlayablePositions.add(new Pos(i,j));
+            }
+        }
+
+
         return listPlayablePositions;
     }
 

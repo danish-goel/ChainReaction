@@ -16,13 +16,15 @@ import com.badlogic.gdx.utils.Timer;
 public class GameScreen extends AndroidApplication implements ChainReaction.GameCallback {
 
     ChainReaction cr;
-
+//    int grid[][];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         cr = new com.ai.chainreaction.ChainReaction(this);
         initialize(cr, config);
+//        grid=new int[cr.boardRows][cr.boardCols];
+//        initalizeGrid(cr.tiles);
         //Toast.makeText(GameScreen.this, "abcd", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -35,12 +37,13 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     int numMoves;
     int turn;
 
+
     public void recur()
     {
-        //TODO shift to activity gameover from class gameover
         numMoves++;
         ChainReaction.debug++;
-        programaticallyMoveRandom(turn);
+        programaticallyMoveMiniMax(turn);
+//        programaticallyMoveRandom(turn);
         if(!cr.gameOver)
             new Handler().postDelayed(new Runnable() {
                 @Override

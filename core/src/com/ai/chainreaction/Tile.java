@@ -37,8 +37,10 @@ public class Tile {
     float height;
 
     int threshold;
+
     int color;
     boolean explode = false;
+
     int numOrbs;
 
     HashMap<String, TextureAtlas> atlases;
@@ -126,5 +128,21 @@ public class Tile {
             return false;
         return true;
     }
+
+    public int getNumOrbs() {
+        return numOrbs;
+    }
+
+    public void setNumOrbs(int numOrbs) {
+        this.numOrbs = numOrbs;
+    }
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
 
 }

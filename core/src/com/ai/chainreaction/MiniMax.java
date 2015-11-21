@@ -1,6 +1,7 @@
 package com.ai.chainreaction;
 
 import com.ai.chainreaction.Utilities.Pos;
+import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class MiniMax {
     int depthLimit;
     int numRows;
     int numColumns;
+    int[][] grid;
     Pos myBestPos;
 
     ChainReaction chainReaction;
@@ -26,10 +28,12 @@ public class MiniMax {
         numRows = tiles.length;
         numColumns = tiles[0].length;
         myBestPos= new Pos(-1, -1);
+        grid = initalizeGrid(tiles);
     }
 
     public Pos getBestMove(int color) {
         traverseMinimaxTree(0, true, color);
+//        Gdx.app.log("BEST MOVE",myBestPos);
         return myBestPos;
     }
 
@@ -39,25 +43,15 @@ public class MiniMax {
 
         //base case when the depth is reached
         if (currentDepth == depthLimit) {
-            //TileCoordinate c = orbPlacements.get(tile);
-            return getHeuristic(tiles, color);  //return getHeuristic(tiles, c.row, c.col); // TODO DG check and remove this comment
+            return getHeuristic(tiles, color);
         }
 
         // back up grid
-        List<TileData> filledTiles = storeGrid(tiles);
+//        List<TileData> filledTiles = storeGrid(tiles);
+        int[][] backUpGrid = copyGrid(grid);
 
         //check all the places where you can place the Orb
-        List<Pos> listPlayablePostitions = Utilities.getPlayablePositions(tiles, color);
-//        Map<Tile, TileCoordinate> orbPlacements = new HashMap<Tile, TileCoordinate>();
-//        for (int row = 0; row < numRows; row++) {
-//            for (int col = 0; col < numColumns; col++) {
-//                Tile tile = tiles[row][col];
-//                if (tile.color == Tile.EMPTY || tile.color == color) {
-//                    TileCoordinate c = new TileCoordinate(row, col);
-//                    orbPlacements.put(tile, c);
-//                }
-//            }
-//        }
+        List<Pos> listPlayablePostitions = Utilities.getPlayablePositions(grid, color);
 
         int min = 0;
         int max = 0;
@@ -66,13 +60,14 @@ public class MiniMax {
         } else {
             returnValue = min = 100000; //set to +infinity
         }
-        //for (Tile tile : orbPlacements.keySet()) {
+
         for (Pos playablePos : listPlayablePostitions) {
 
             //modifications
-            Tile tile = tiles[playablePos.row][playablePos.col];
+//            Tile tile = tiles[playablePos.row][playablePos.col];
             //chainReaction.inputListener.tileClicked(tile, color, (int) tile.x, (int) tile.y, chainReaction.boardRows, chainReaction.boardCols);
-            chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
+//            chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
+            // TODO put generic array touch here
 
             //recursion
             int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color); //invert the color and minMax node and call for next depth
@@ -97,10 +92,46 @@ public class MiniMax {
             }
 
             //revert the grid
-            revertGrid(tiles, filledTiles);
+//            revertGrid(tiles, filledTiles);
+            revertGrid(backUpGrid,grid);
         }
 
         return returnValue;
+    }
+
+    public int[][] initalizeGrid(Tile tiles[][])
+    {
+        int grid[][] = new int[tiles.length][tiles[0].length];
+        for (int row=0;row<tiles.length;row++)
+        {
+            for (int col=0;col<tiles[0].length;col++)
+            {
+                grid[row][col]=tiles[row][col].getColor()*tiles[row][col].getNumOrbs();
+            }
+        }
+        return grid;
+    }
+
+    int[][] copyGrid(int tiles[][])
+    {
+        int newGrid[][]=new int[tiles.length][tiles[0].length];
+        for (int row=0;row<tiles.length;row++)
+        {
+            for (int col=0;col<tiles[0].length;col++)
+            {
+                newGrid[row][col]=tiles[row][col];
+            }
+        }
+        return newGrid;
+    }
+
+    void revertGrid(int[][] source,int[][] destination)
+    {
+        for (int row=0;row<source.length;row++) {
+            for (int col = 0; col < source[0].length; col++) {
+                destination[row][col]=source[row][col];
+            }
+        }
     }
 
     private void revertGrid(Tile[][] grid, List<TileData> filledTiles) {
