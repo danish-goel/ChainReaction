@@ -27,7 +27,7 @@ public class InputListener extends InputAdapter {
         if (!chainreaction.gameOver)
             playTurnOnTouch();
         //dbshjsdb
-        Gdx.app.log("moves", ""+chainreaction.moves);
+        Gdx.app.log("moves", "" + chainreaction.moves);
 
         return super.touchDown(screenX, screenY, pointer, button);
     }
@@ -39,9 +39,9 @@ public class InputListener extends InputAdapter {
                 if (tile.touched(coord.x, coord.y)) {
                     tile.player = chainreaction.turn;
                     if (tile.player == Tile.RED && (tile.color == Tile.EMPTY || tile.color == Tile.RED)) {
-                        tileClicked(tile, Tile.RED, row, col, chainreaction.boardRows, chainreaction.boardCols);
+                        tileClicked(Tile.RED, row, col);
                     } else if (tile.player == Tile.BLUE && (tile.color == Tile.EMPTY || tile.color == Tile.BLUE)) {
-                        tileClicked(tile, Tile.BLUE, row, col, chainreaction.boardRows, chainreaction.boardCols);
+                        tileClicked(Tile.BLUE, row, col);
                     } else {
                         chainreaction.turn = -1 * chainreaction.turn;   //turn does not change
                         chainreaction.moves--;
@@ -57,7 +57,10 @@ public class InputListener extends InputAdapter {
         }
     }
 
-    void tileClicked(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
+    public void tileClicked(int color, int currentRow, int currentColumn) {
+
+        if (chainreaction.gameOver)
+            return;
 
         Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
         TileCoordinate start = new TileCoordinate(currentRow, currentColumn);
@@ -65,9 +68,8 @@ public class InputListener extends InputAdapter {
         Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
         int count = 0;
         while (!tilesToBeClicked.isEmpty()) {
-            Gdx.app.log("moves", "qSize: "+tilesToBeClicked.size());
-            if(count%1==0)
-            {
+            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
+            if (count % 1 == 0) {
                 if (chainreaction.checkWinnerSimple() != Tile.EMPTY) {
                     chainreaction.gameOver = true;
                     chainreaction.gc.gameOver();
@@ -78,10 +80,10 @@ public class InputListener extends InputAdapter {
 
             TileCoordinate clickThisTileCoordinate = tilesToBeClicked.remove();
 //            Gdx.app.log(clickThisTileCoordinate.getRow()+" "+clickThisTileCoordinate.col+ "Size", ""+tilesToBeClicked.size());
-            Gdx.app.log("minimax", "x"+tile.x+ "y"+tile.y);
-            Gdx.app.log("minimax", "x"+clickThisTileCoordinate.row+ "y"+clickThisTileCoordinate.col);
+            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
+            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
             Tile clickThisTile = chainreaction.tiles[clickThisTileCoordinate.row][clickThisTileCoordinate.col];
-            Queue<TileCoordinate> returnedTiles = explodedTiles(clickThisTile, color, clickThisTileCoordinate.row, clickThisTileCoordinate.col, totalRows, totalColumns);
+            Queue<TileCoordinate> returnedTiles = explodedTiles(clickThisTile, color, clickThisTileCoordinate.row, clickThisTileCoordinate.col, chainreaction.boardRows, chainreaction.boardCols);
             if (returnedTiles.size() > 0) {
                 tilesToBeClicked.addAll(returnedTiles);
 

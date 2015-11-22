@@ -41,16 +41,18 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     public void recur() {
         numMoves++;
         ChainReaction.debug++;
-        programaticallyMoveMiniMax(turn);
-//        myTurn *= -1;
-//        programaticallyMoveRandom(turn);
+        turn *= -1;
+        if (turn > 0)
+            programaticallyMoveMiniMax(turn);
+        else
+            programaticallyMoveRandom(turn);
         if (!chainReaction.gameOver)
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     recur();
                 }
-            }, 200);
+            }, 500);
     }
 
     public void startSimulating() {
@@ -74,7 +76,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     public void programaticallyMove(int player, int x, int y) {
         Tile tile = chainReaction.tiles[x][y];
         tile.player = player;
-        chainReaction.inputListener.touchDown((int) tile.x, (int) tile.y, 0, 0);
+        chainReaction.inputListener.tileClicked(player, x, y);//touchDown((int) tile.x, (int) tile.y, 0, 0);
     }
 
     @Override
