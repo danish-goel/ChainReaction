@@ -17,4 +17,11 @@ public class RandomTemp {
         return listPlayablePostitions.get(random.nextInt(listPlayablePostitions.size()));
     }
 
+    public static Pos getNextCoord(int[][] tiles, int turn)
+    {
+        List<Pos> listPlayablePostitions = Utilities.getPlayablePositions(tiles, turn);
+        Random random = new Random();
+        return listPlayablePostitions.get(random.nextInt(listPlayablePostitions.size()));
+    }
+
 }

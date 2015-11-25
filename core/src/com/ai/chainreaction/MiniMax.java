@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -31,7 +32,7 @@ public class MiniMax {
         numRows = tiles.length;
         numColumns = tiles[0].length;
         myBestPos = new Pos(-1, -1);
-        grid = initalizeGrid(tiles);
+        grid = Utilities.initalizeGrid(tiles);
     }
 
     public Pos getBestMove(int color) {
@@ -112,16 +113,6 @@ public class MiniMax {
         return returnValue;
     }
 
-    public int[][] initalizeGrid(Tile tiles[][]) {
-        int grid[][] = new int[tiles.length][tiles[0].length];
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[0].length; col++) {
-                grid[row][col] = tiles[row][col].getColor() * tiles[row][col].getNumOrbs();
-            }
-        }
-        return grid;
-    }
-
     int[][] copyGrid(int tiles[][]) {
         int newGrid[][] = new int[tiles.length][tiles[0].length];
         for (int row = 0; row < tiles.length; row++) {
@@ -162,7 +153,7 @@ public class MiniMax {
         int myOrbs = 0;
         int enemyOrbs = 0;
         int score = 0;
-        boolean vurnerable = true;
+        boolean vulnerable = true;
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
                 int curColor = (int) Math.signum(grid[row][col]);
@@ -181,14 +172,14 @@ public class MiniMax {
                                 {
                                     if (Math.abs(tile) == Tile.getThreshold(numRows, numColumns, row + i, col + j) - 1) {
                                         score -= 5 - Tile.getThreshold(numRows, numColumns, row + i, col + j);
-                                        vurnerable = false;
+                                        vulnerable = false;
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (vurnerable) {
+                    if (vulnerable) {
                         int currentTile = grid[row][col];
                         int threshold = Tile.getThreshold(numRows, numColumns, row, col);
                         if (threshold == 3) {
@@ -207,75 +198,19 @@ public class MiniMax {
             }
         }
 
-        score += chains(grid, color);
+        //add chain sizes
+        Map<Pos, Integer> chains = Utilities.getChains(grid, color);
+        for (Integer eachValue : chains.values()) {
+            if(eachValue>1)
+                score += eachValue;
+        }
 
         if (myOrbs > 1 && enemyOrbs == 0) {
             score += 1000;    //win case
         } else if (myOrbs == 0 && enemyOrbs > 1) {
             score -= 1000;    //lose case
         }
-
-
         return score;
-    }
-
-    public int chains(int[][] grid, int color) {
-        int tiles;
-        //init vars
-        int answer = 0;
-        int numRows = grid.length;
-        int numColumns = grid[0].length;
-        boolean visited[][] = new boolean[numRows][numColumns];
-        //init visited
-        for (int i = 0; i < numRows; i++)
-            for (int j = 0; j < numColumns; j++)
-                visited[i][j] = false;
-
-        // main code
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
-                //for each tile
-                int tile = grid[i][j];
-                int tileColor = (int) Math.signum(tile);
-                int tileThreshold = Tile.getThreshold(numRows, numColumns, i, j);
-                int tileNumOrbs = Math.abs(tile);
-                //if my cell is unstable - need to count this chain
-                if (tileNumOrbs == tileThreshold - 1 && tileColor == color) {
-                    //init dfs
-                    int count = 0;
-                    Stack<Pos> stack = new Stack();
-                    stack.add(new Pos(i, j));
-                    visited[i][j] = true;
-                    //dfs loop
-                    while (!stack.empty()) {
-                        count++;
-                        Pos pos = stack.pop();
-                        //iterating over neighbors
-                        for (Pos eachPos : Tile.get4Neighbours(numRows, numColumns, pos.row, pos.col)) {
-                            //visited
-                            if (visited[eachPos.row][eachPos.col])
-                                continue;
-                            visited[eachPos.row][eachPos.col] = true;
-
-                            //add tile if unstable
-                            tile = grid[eachPos.row][eachPos.col];
-                            tileColor = (int) Math.signum(tile);
-                            tileThreshold = Tile.getThreshold(numRows, numColumns, i, j);
-                            tileNumOrbs = Math.abs(tile);
-                            if (tileNumOrbs == tileThreshold - 1 && tileColor == color) {
-                                stack.add(eachPos);
-                            }
-                        }
-                    }
-
-                    //TODO chain returning unstable cells (size>1), might be changed to include ememy unstable cells
-                    if (count > 1)
-                        answer += count;
-
-                }
-            }
-        }
-        return answer;
     }
 
     public class TileData {

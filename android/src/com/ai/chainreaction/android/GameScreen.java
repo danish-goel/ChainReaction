@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
+import com.ai.chainreaction.Greedy;
 import com.ai.chainreaction.MiniMax;
 import com.ai.chainreaction.RandomTemp;
 import com.ai.chainreaction.Tile;
@@ -42,10 +43,13 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         numMoves++;
         ChainReaction.debug++;
         turn *= -1;
-        if (turn > 0)
+        if (turn > 0) {
+//            programaticallyGreedy(turn);
             programaticallyMoveMiniMax(turn);
-        else
+        }
+        else {
             programaticallyMoveRandom(turn);
+        }
         if (!chainReaction.gameOver) {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -71,12 +75,20 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         programaticallyMove(player, pos.row, pos.col);
     }
 
+    public void programaticallyGreedy(int player) {
+        Utilities.Pos pos = Greedy.getNextCoord(Utilities.initalizeGrid(chainReaction.tiles),player);
+        int moveRow=pos.row;
+        int moveColumn=pos.col;
+        programaticallyMove(player, pos.row, pos.col);
+    }
+
     public void programaticallyMoveRandom(int player) {
         Utilities.Pos pos = RandomTemp.getNextCoord(chainReaction.tiles, player);
         int randomMoveRow=pos.row;
         int randomMoveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
+
 
     public void programaticallyMove(int player, int x, int y) {
         Tile tile = chainReaction.tiles[x][y];

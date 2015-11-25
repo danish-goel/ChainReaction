@@ -111,7 +111,7 @@ public class Tile {
             for (int j = -1; j <= 1; j++) {
                 if (i == j)
                     continue;
-                if (i != 0 || j != 0)
+                if (i != 0 && j != 0)
                     continue;
                 if (checkExistance(rows, cols, x + i, y + j)) {
                     list.add(new Pos(x + i, y + j));
