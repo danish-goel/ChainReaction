@@ -64,7 +64,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveMiniMax(int player) {
-        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 2);
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 3);
         Utilities.Pos pos = miniMax.getBestMove(player);
         int moveRow=pos.row;
         int moveColumn=pos.col;

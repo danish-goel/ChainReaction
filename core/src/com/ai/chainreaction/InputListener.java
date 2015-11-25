@@ -71,8 +71,9 @@ public class InputListener extends InputAdapter {
         int count = 0;
         while (!tilesToBeClicked.isEmpty()) {
             Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
-            if (count % 1 == 0) {
-                if (chainreaction.checkWinnerSimple() != Tile.EMPTY) {
+            if (count % 1 == 0 ) {
+                int winnerColor=chainreaction.checkWinnerSimple();
+                if (winnerColor != Tile.EMPTY && color==winnerColor) {
                     chainreaction.gameOver = true;
                     chainreaction.gc.gameOver();
                     return;
