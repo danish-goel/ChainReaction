@@ -62,6 +62,8 @@ public class InputListener extends InputAdapter {
         if (chainreaction.gameOver)
             return;
 
+        chainreaction.moves++;
+
         Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
         TileCoordinate start = new TileCoordinate(currentRow, currentColumn);
         tilesToBeClicked.add(start);
@@ -109,19 +111,19 @@ public class InputListener extends InputAdapter {
                 tilesToBeClicked.add(leftTile);
 //                tileClicked(leftTile, color, currentRow, leftColumn, totalRows, totalColumns);
             }
-            if (rightTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
-                int rightColumn = currentColumn + 1;
-//                Tile rightTile = chainreaction.tiles[currentRow][rightColumn];
-                TileCoordinate rightTile = new TileCoordinate(currentRow, rightColumn);
-                tilesToBeClicked.add(rightTile);
-//                tileClicked(rightTile, color, currentRow, rightColumn, totalRows, totalColumns);
-            }
             if (topTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int topRow = currentRow - 1;
 //                Tile topTile = chainreaction.tiles[topRow][currentColumn];
                 TileCoordinate topTile = new TileCoordinate(topRow, currentColumn);
                 tilesToBeClicked.add(topTile);
 //                tileClicked(topTile, color, topRow, currentColumn, totalRows, totalColumns);
+            }
+            if (rightTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
+                int rightColumn = currentColumn + 1;
+//                Tile rightTile = chainreaction.tiles[currentRow][rightColumn];
+                TileCoordinate rightTile = new TileCoordinate(currentRow, rightColumn);
+                tilesToBeClicked.add(rightTile);
+//                tileClicked(rightTile, color, currentRow, rightColumn, totalRows, totalColumns);
             }
             if (bottomTileExists(currentRow, currentColumn, totalRows, totalColumns)) {
                 int bottomRow = currentRow + 1;

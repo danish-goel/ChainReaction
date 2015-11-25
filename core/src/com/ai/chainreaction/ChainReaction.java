@@ -119,7 +119,7 @@ public class ChainReaction extends ApplicationAdapter {
 
 
     public int checkWinnerSimple() {
-        if (moves < 2)
+        if (moves <= 2)
             return Tile.EMPTY;
         boolean foundRed = false;
         boolean foundBlue = false;

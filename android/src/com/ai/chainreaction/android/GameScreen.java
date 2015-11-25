@@ -46,13 +46,14 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             programaticallyMoveMiniMax(turn);
         else
             programaticallyMoveRandom(turn);
-        if (!chainReaction.gameOver)
+        if (!chainReaction.gameOver) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     recur();
                 }
             }, 500);
+        }
     }
 
     public void startSimulating() {
@@ -65,11 +66,15 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     public void programaticallyMoveMiniMax(int player) {
         MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 2);
         Utilities.Pos pos = miniMax.getBestMove(player);
+        int moveRow=pos.row;
+        int moveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
     public void programaticallyMoveRandom(int player) {
         Utilities.Pos pos = RandomTemp.getNextCoord(chainReaction.tiles, player);
+        int randomMoveRow=pos.row;
+        int randomMoveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
