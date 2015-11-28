@@ -1,7 +1,14 @@
 package com.ai.chainreaction.android;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
@@ -16,14 +23,21 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 public class GameScreen extends AndroidApplication implements ChainReaction.GameCallback {
 
     ChainReaction chainReaction;
+    public final String PREFS_NAME = "MyPrefsFile";
+
+
+    int firstAlgo;
+    int secondAlgo;
 
     //    int grid[][];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAlgoChoice();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         chainReaction = new com.ai.chainreaction.ChainReaction(this);
         initialize(chainReaction, config);
+
 //        grid=new int[chainReaction.boardRows][chainReaction.boardCols];
 //        initalizeGrid(chainReaction.tiles);
         //Toast.makeText(GameScreen.this, "abcd", Toast.LENGTH_SHORT).show();
@@ -45,10 +59,10 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         turn *= -1;
         if (turn > 0) {
 //            programaticallyGreedy(turn);
-            programaticallyMoveMiniMax(turn);
+            RunAlgo(firstAlgo,turn);
         }
         else {
-            programaticallyMoveRandom(turn);
+            RunAlgo(secondAlgo,turn);
         }
         if (!chainReaction.gameOver) {
             new Handler().postDelayed(new Runnable() {
@@ -105,4 +119,50 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             }
         });
     }
+
+    public void RunAlgo(int choice,int turn)
+    {
+        switch (choice)
+        {
+            case 0:
+                programaticallyMoveRandom(turn);
+                break;
+            case 1:
+                programaticallyMoveMiniMax(turn);
+                break;
+            case 2:
+                programaticallyGreedy(turn);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void getAlgoChoice() {
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+        String first=prefs.getString("firstAlgoName","");
+        String second=prefs.getString("secondAlgoName", "");
+        setAlgoChoice(first, firstAlgo);
+        setAlgoChoice(second,secondAlgo);
+
+    }
+
+    public void setAlgoChoice(String algoName,int choice)
+    {
+        if(algoName.equalsIgnoreCase("random"))
+        {
+            choice=0;
+        }
+        else if(algoName.equalsIgnoreCase("minimax"))
+        {
+            choice=1;
+        }
+        else if (algoName.equalsIgnoreCase("greedy"))
+        {
+            choice=2;
+        }
+    }
+
 }

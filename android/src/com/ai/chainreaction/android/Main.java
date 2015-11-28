@@ -14,14 +14,16 @@ public class Main extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Button start = (Button) findViewById(R.id.startButton);
-        start.setOnClickListener(this);
+        Button human = (Button) findViewById(R.id.humanGameButton);
+        human.setOnClickListener(this);
+        Button computer = (Button) findViewById(R.id.computerGameButton);
+        computer.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.startButton) {
-            Intent i=new Intent(this,GameScreen.class);
+        if (v.getId() == R.id.computerGameButton) {
+            Intent i=new Intent(this,ComputerVsComputer.class);
             startActivity(i);
         }
     }
