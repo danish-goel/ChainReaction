@@ -32,6 +32,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Settings"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.ai.chainreaction.Settings" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
 
         <activity
             android:name=".GameScreen"
