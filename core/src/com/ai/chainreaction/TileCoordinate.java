@@ -9,8 +9,8 @@ package com.ai.chainreaction;
  */
 
 public class TileCoordinate {
-    int row;
-    int col;
+    public int row;
+    public int col;
 
     public TileCoordinate(int row, int col)
     {

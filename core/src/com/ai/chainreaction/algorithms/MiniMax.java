@@ -1,6 +1,13 @@
-package com.ai.chainreaction;
+package com.ai.chainreaction.algorithms;
 
+import com.ai.chainreaction.ChainReaction;
+import com.ai.chainreaction.Tile;
+import com.ai.chainreaction.TileCoordinate;
+import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.Utilities.Pos;
+import com.ai.chainreaction.algorithms.IAlgorithm;
+import com.ai.chainreaction.heuristics.ChainHeuristic;
+import com.ai.chainreaction.heuristics.IHeuristic;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
@@ -13,7 +20,7 @@ import java.util.Stack;
 /**
  * Created by Danish on 17-Nov-15.
  */
-public class MiniMax {
+public class MiniMax implements IAlgorithm {
 
     Tile[][] tiles;
     int depthLimit;
@@ -21,23 +28,32 @@ public class MiniMax {
     int numColumns;
     int[][] grid;
     Pos myBestPos;
+    IHeuristic heuristic;
 
     ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
 
-    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit) {
+    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic) {
         this.chainReaction = chainReaction;
         this.tiles = tiles;
         this.depthLimit = depthLimit;
+        this.heuristic = heuristic;
         numRows = tiles.length;
         numColumns = tiles[0].length;
         myBestPos = new Pos(-1, -1);
         grid = Utilities.initalizeGrid(tiles);
     }
 
-    public Pos getBestMove(int color) {
+    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit) {
+        this(chainReaction,tiles,depthLimit,new ChainHeuristic());
+    }
+
+    public Pos getNextMove(int color) {
+        return getNextMove(this.grid,color);
+    }
+
+    public Pos getNextMove(int[][] grid, int color) {
         traverseMinimaxTree(0, true, color);
-        Gdx.app.log("BEST MOVE", "ab" + color);
         return myBestPos;
     }
 
@@ -57,7 +73,7 @@ public class MiniMax {
             }
         }
         if (currentDepth == depthLimit) {
-            return getHeuristic(grid, color);
+            return heuristic.getHeuristicValue(grid, color);
         }
 
         // back up grid
@@ -146,71 +162,6 @@ public class MiniMax {
             tile.color = each.color;
             tile.numOrbs = each.numOrbs;
         }
-    }
-
-    int getHeuristic(int[][] grid, int color) {
-
-        int myOrbs = 0;
-        int enemyOrbs = 0;
-        int score = 0;
-        boolean vulnerable = true;
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[0].length; col++) {
-                int curColor = (int) Math.signum(grid[row][col]);
-                if (curColor == color) {
-                    myOrbs++;
-                    for (int i = -1; i <= 1; i++) {
-                        for (int j = -1; j <= 1; j++) {
-                            if (i == j)
-                                continue;
-                            if (i != 0 || j != 0)
-                                continue;
-                            if (Tile.checkExistance(grid.length, grid[0].length, row + i, col + j)) {
-                                //Tile tile = tiles[row + i][col + j];
-                                int tile = grid[row + i][col + j];
-                                if (Math.signum(tile) == -color)   //surrounding enemy neighbours
-                                {
-                                    if (Math.abs(tile) == Tile.getThreshold(numRows, numColumns, row + i, col + j) - 1) {
-                                        score -= 5 - Tile.getThreshold(numRows, numColumns, row + i, col + j);
-                                        vulnerable = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (vulnerable) {
-                        int currentTile = grid[row][col];
-                        int threshold = Tile.getThreshold(numRows, numColumns, row, col);
-                        if (threshold == 3) {
-                            score += 2;
-                        } else if (threshold == 2) {
-                            score += 3;
-                        } else if (Math.abs(currentTile) == threshold - 1) {
-                            score += 2;
-                        }
-                    }
-                } else if (curColor == -color) {
-                    enemyOrbs++;
-                }
-
-
-            }
-        }
-
-        //add chain sizes
-        Map<Pos, Integer> chains = Utilities.getChains(grid, color);
-        for (Integer eachValue : chains.values()) {
-            if(eachValue>1)
-                score += eachValue;
-        }
-
-        if (myOrbs > 1 && enemyOrbs == 0) {
-            score += 1000;    //win case
-        } else if (myOrbs == 0 && enemyOrbs > 1) {
-            score -= 1000;    //lose case
-        }
-        return score;
     }
 
     public class TileData {

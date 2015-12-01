@@ -38,10 +38,10 @@ public class Tile {
 
     int threshold;
 
-    int color;
+    public int color;
     boolean explode = false;
 
-    int numOrbs;
+    public int numOrbs;
 
     HashMap<String, TextureAtlas> atlases;
     Rectangle rectangle = new Rectangle();

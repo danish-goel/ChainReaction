@@ -4,17 +4,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
-import com.ai.chainreaction.Greedy;
-import com.ai.chainreaction.MiniMax;
-import com.ai.chainreaction.RandomTemp;
+import com.ai.chainreaction.algorithms.GreedyAlgorithm;
+import com.ai.chainreaction.algorithms.MiniMax;
+import com.ai.chainreaction.algorithms.RandomAlgorithm;
 import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -24,7 +19,6 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
-
 
     int firstAlgo;
     int secondAlgo;
@@ -82,22 +76,25 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveMiniMax(int player) {
+        Log.d("abcd","minimax");
         MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 3);
-        Utilities.Pos pos = miniMax.getBestMove(player);
+        Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow=pos.row;
         int moveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
     public void programaticallyGreedy(int player) {
-        Utilities.Pos pos = Greedy.getNextCoord(Utilities.initalizeGrid(chainReaction.tiles),player);
+        Log.d("abcd","greedy");
+        Utilities.Pos pos = new GreedyAlgorithm().getNextMove(Utilities.initalizeGrid(chainReaction.tiles),player);
         int moveRow=pos.row;
         int moveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
     public void programaticallyMoveRandom(int player) {
-        Utilities.Pos pos = RandomTemp.getNextCoord(chainReaction.tiles, player);
+        Log.d("abcd","random");
+        Utilities.Pos pos = new RandomAlgorithm().getNextMove(Utilities.initalizeGrid(chainReaction.tiles), player);
         int randomMoveRow=pos.row;
         int randomMoveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);

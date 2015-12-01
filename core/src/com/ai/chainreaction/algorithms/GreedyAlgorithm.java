@@ -1,5 +1,6 @@
-package com.ai.chainreaction;
+package com.ai.chainreaction.algorithms;
 
+import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.Utilities.Pos;
 
 import java.util.Map;
@@ -7,9 +8,12 @@ import java.util.Map;
 /**
  * Created by Danish on 25-Nov-15.
  */
-public class Greedy {
+public class GreedyAlgorithm implements IAlgorithm {
 
-    public static Pos getNextCoord(int[][] grid, int player) {
+    public GreedyAlgorithm() {
+    }
+
+    public Pos getNextMove(int[][] grid, int player) {
         Pos pos = null;
 //        List<Pos> listPlayablePostitions = Utilities.getPlayablePositions(grid, player);
 //        Random random = new Random();
@@ -23,7 +27,7 @@ public class Greedy {
             }
         }
         if (chains.size() == 0)
-            return RandomTemp.getNextCoord(grid, player);
+            return new RandomAlgorithm().getNextMove(grid, player);
         return pos;
     }
 
