@@ -47,31 +47,19 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             public void run() {
                 startSimulating();
             }
-        }, 1000);
+        }, 500);
     }
 
     int numMoves;
     static int turn;
-    static int myTurn = 1;
 
     public void recur() {
-        numMoves++;
         ChainReaction.debug++;
-        turn *= -1;
         if (turn > 0) {
-//            programaticallyGreedy(turn);
             RunAlgo(firstAlgo,turn);
         }
         else {
             RunAlgo(secondAlgo,turn);
-        }
-        if (!chainReaction.gameOver) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    recur();
-                }
-            }, 500);
         }
     }
 
@@ -79,12 +67,12 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         numMoves = 0;
         turn = Tile.RED;
         chainReaction.turn = turn;
-        recur();
+        nextMove();
     }
 
     public void programaticallyMoveMiniMax(int player) {
         Log.d("abcd","minimax");
-        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 3, new ChainHeuristic(false));
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 4, new ChainHeuristic(true));
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow=pos.row;
         int moveColumn=pos.col;
@@ -122,6 +110,31 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
                 Toast.makeText(getApplicationContext(), "loser loser chicken dinner :P ", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void nextMove() {
+        numMoves++;
+        turn*=-1;
+        chainReaction.turn = turn;
+        if (!chainReaction.gameOver) {
+            if(turn > 0 && firstAlgo == 0)
+                return;
+            if(turn < 0 && secondAlgo == 0)
+                return;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            recur();
+                        }
+                    }, 500);
+                }
+            });
+
+        }
     }
 
     public void RunAlgo(int choice,int turn)

@@ -43,15 +43,15 @@ public class InputListener extends InputAdapter {
                     } else if (tile.player == Tile.BLUE && (tile.color == Tile.EMPTY || tile.color == Tile.BLUE)) {
                         tileClicked(Tile.BLUE, row, col);
                     } else {
-                        chainreaction.turn = -1 * chainreaction.turn;   //turn does not change
-                        chainreaction.moves--;
+//                        chainreaction.turn = -1 * chainreaction.turn;   //turn does not change
+//                        chainreaction.moves--;
                     }
                     if (chainreaction.checkWinnerSimple() != Tile.EMPTY) {
                         chainreaction.gc.gameOver();
                         chainreaction.gameOver = true;
                     }
-                    chainreaction.turn = -1 * chainreaction.turn;
-                    chainreaction.moves++;
+//                    chainreaction.turn = -1 * chainreaction.turn;
+//                    chainreaction.moves++;
                 }
             }
         }
@@ -63,6 +63,7 @@ public class InputListener extends InputAdapter {
         if (chainreaction.gameOver)
             return;
 
+//        chainreaction.turn = -1 * chainreaction.turn;
         chainreaction.moves++;
 
         Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
@@ -94,6 +95,7 @@ public class InputListener extends InputAdapter {
             }
         }
         Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
+        chainreaction.gc.nextMove();
     }
 
     Queue<TileCoordinate> explodedTiles(Tile tile, int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {

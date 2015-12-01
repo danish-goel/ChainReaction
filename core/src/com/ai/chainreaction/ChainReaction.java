@@ -143,6 +143,7 @@ public class ChainReaction extends ApplicationAdapter {
 
     public interface GameCallback {
         public void gameOver();
+        public void nextMove();
     }
 
 }
