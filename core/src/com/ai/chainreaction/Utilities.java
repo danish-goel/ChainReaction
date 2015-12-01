@@ -51,9 +51,35 @@ public class Utilities {
                     listPlayablePositions.add(new Pos(i, j));
             }
         }
-
-
         return listPlayablePositions;
+    }
+
+    public static int getOrbCount(int[][] grid, int turn, boolean includeAndSubtractEnemy, boolean useTileCountNotOrbCount) {
+        int score = 0;
+        int rows = grid.length;
+        int cols = grid[0].length;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int color = (int) Math.signum(grid[i][j]);
+                int numOrbs = Math.abs(grid[i][j]);
+                if (color == turn)
+                {
+                    if (useTileCountNotOrbCount) {
+                        score++;
+                    } else {
+                        score += numOrbs;
+                    }
+                }
+                else if(color == -turn && includeAndSubtractEnemy) {
+                    if (useTileCountNotOrbCount) {
+                        score--;
+                    } else {
+                        score -= numOrbs;
+                    }
+                }
+            }
+        }
+        return score;
     }
 
     public static Map<Pos, Integer> getChains(int[][] grid, int color) {
@@ -125,5 +151,7 @@ public class Utilities {
         }
         return grid;
     }
+
+
 
 }

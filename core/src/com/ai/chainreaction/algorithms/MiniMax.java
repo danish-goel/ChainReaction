@@ -32,6 +32,7 @@ public class MiniMax implements IAlgorithm {
 
     ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
+    int globalColor;
 
     public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic) {
         this.chainReaction = chainReaction;
@@ -53,6 +54,7 @@ public class MiniMax implements IAlgorithm {
     }
 
     public Pos getNextMove(int[][] grid, int color) {
+        this.globalColor = color;
         traverseMinimaxTree(0, true, color);
         return myBestPos;
     }
@@ -66,14 +68,15 @@ public class MiniMax implements IAlgorithm {
         //base case when the depth is reached
         if (checkWinnerIfExists(grid) != Tile.EMPTY) {
             Gdx.app.debug("depth", "" + currentDepth + Max + color);
+            int factor = depthLimit - currentDepth + 1;
             if (Max) {
-                return 100000;    //set to -infinity
+                return 100000 * factor;    //set to -infinity
             } else {
-                return -100000; //set to +infinity
+                return -100000 * factor; //set to +infinity
             }
         }
         if (currentDepth == depthLimit) {
-            return heuristic.getHeuristicValue(grid, color);
+            return heuristic.getHeuristicValue(grid, globalColor);
         }
 
         // back up grid
