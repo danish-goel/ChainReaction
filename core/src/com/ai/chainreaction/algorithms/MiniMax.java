@@ -34,6 +34,9 @@ public class MiniMax implements IAlgorithm {
     static int numTraverseTreeCalls = 0;
     int globalColor;
 
+    int INFINITY=100000;
+    int MINUESINFINITY=-100000;
+
     public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic) {
         this.chainReaction = chainReaction;
         this.tiles = tiles;
@@ -55,11 +58,11 @@ public class MiniMax implements IAlgorithm {
     public Pos getNextMove(int[][] grid, int color) {
         this.globalColor = color;
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
-        traverseMinimaxTree(0, true, color);
+        traverseMinimaxTree(0, true, color,MINUESINFINITY,INFINITY,true);
         return myBestPos;
     }
 
-    int traverseMinimaxTree(int currentDepth, boolean Max, int color) {
+    int traverseMinimaxTree(int currentDepth, boolean Max, int color,int alpha,int beta,boolean pruning) {
 
         int returnValue = 0;
 
@@ -70,9 +73,9 @@ public class MiniMax implements IAlgorithm {
             Gdx.app.debug("depth", "" + currentDepth + Max + color);
             int factor = depthLimit - currentDepth + 1;
             if (!Max) {
-                return 100000 * factor;    //set to -infinity
+                return INFINITY * factor;    //set to -infinity
             } else {
-                return -100000 * factor; //set to +infinity
+                return MINUESINFINITY * factor; //set to +infinity
             }
         }
         if (currentDepth == depthLimit) {
@@ -89,9 +92,9 @@ public class MiniMax implements IAlgorithm {
         int min = 0;
         int max = 0;
         if (Max) {
-            returnValue = max = -100000;    //set to -infinity
+            returnValue = max = MINUESINFINITY;    //set to -infinity
         } else {
-            returnValue = min = 100000; //set to +infinity
+            returnValue = min = INFINITY; //set to +infinity
         }
 
         for (Pos playablePos : listPlayablePostitions) {
@@ -103,7 +106,7 @@ public class MiniMax implements IAlgorithm {
             clickTile(color, playablePos.row, playablePos.col, grid.length, grid[0].length);
 
             //recursion
-            int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color); //invert the color and minMax node and call for next depth
+            int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color,MINUESINFINITY,INFINITY,true); //invert the color and minMax node and call for next depth
             if (Max) {
                 if (ret > max) {
                     max = ret;
@@ -111,6 +114,14 @@ public class MiniMax implements IAlgorithm {
                     if (currentDepth == 0) {
                         myBestPos.row = playablePos.row;
                         myBestPos.col = playablePos.col;
+                    }
+
+                    if(pruning) {
+                        alpha = max(max, alpha);
+                        if (beta <= alpha) {
+                            revertGrid(backUpGrid, grid);
+                            break;
+                        }
                     }
                 }
             } else {
@@ -120,6 +131,14 @@ public class MiniMax implements IAlgorithm {
                     if (currentDepth == 0) {
                         myBestPos.row = playablePos.row;
                         myBestPos.col = playablePos.col;
+                    }
+
+                    if(pruning) {
+                        beta = min(min, beta);
+                        if (beta <= alpha) {
+                            revertGrid(backUpGrid, grid);
+                            break;
+                        }
                     }
                 }
             }
@@ -288,5 +307,24 @@ public class MiniMax implements IAlgorithm {
             return Tile.RED;
         return Tile.EMPTY;
     }
+
+    private int max(int x,int y)
+    {
+        if(x>y)
+        {
+            return x;
+        }
+        return y;
+    }
+
+    private int min(int x,int y)
+    {
+        if(x<y)
+        {
+            return x;
+        }
+        return y;
+    }
+
 
 }
