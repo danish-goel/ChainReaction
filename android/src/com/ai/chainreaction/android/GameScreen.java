@@ -10,6 +10,9 @@ import com.ai.chainreaction.ChainReaction;
 import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.algorithms.GreedyAlgorithm;
+import com.ai.chainreaction.algorithms.MCTS.ChainReactionPlayer;
+import com.ai.chainreaction.algorithms.MCTS.ChainReactionState;
+import com.ai.chainreaction.algorithms.MCTS.Mcts;
 import com.ai.chainreaction.algorithms.MiniMax;
 import com.ai.chainreaction.algorithms.RandomAlgorithm;
 import com.ai.chainreaction.heuristics.ChainHeuristic;
@@ -22,6 +25,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
 
+    private final Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(500);
     static boolean FIRSTHUMAN;
     static boolean SECONDHUMAN;
     static boolean BOTS;
@@ -75,6 +79,14 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
+        programaticallyMove(player, pos.row, pos.col);
+    }
+
+    public void programaticallyMoveMCTS(int player) {
+        Log.d("abcd","mcts");
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player+1)/2), 0.2);
+        int moveRow=pos.row;
+        int moveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
@@ -142,12 +154,14 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
                 programaticallyMoveRandom(turn);
                 break;
             case 2:
-                programaticallyMoveMiniMax(turn);
+//                programaticallyMoveMiniMax(turn);
+                programaticallyMoveMCTS(turn);
                 break;
             case 3:
                 programaticallyGreedy(turn);
                 break;
             default:
+                programaticallyMoveMCTS(turn);
                 break;
         }
     }

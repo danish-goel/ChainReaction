@@ -3,6 +3,7 @@ package com.ai.chainreaction;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -260,6 +261,29 @@ public class Utilities {
         return tilesToBeClicked;
     }
 
+    public static int[][] copyGrid(int tiles[][]) {
+        // for Minimax only
+//        statesCurrent++;
+//        if (statesCurrent > statesMax)
+//            statesMax = statesCurrent;
+        int newGrid[][] = new int[tiles.length][tiles[0].length];
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[0].length; col++) {
+                newGrid[row][col] = tiles[row][col];
+            }
+        }
+        return newGrid;
+    }
+
+    public static void revertGrid(int[][] source, int[][] destination) {
+        // for Minimax only
+//        statesCurrent--;
+        for (int row = 0; row < source.length; row++) {
+            for (int col = 0; col < source[0].length; col++) {
+                destination[row][col] = source[row][col];
+            }
+        }
+    }
 
 
 }
