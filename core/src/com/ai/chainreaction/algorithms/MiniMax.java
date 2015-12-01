@@ -5,17 +5,15 @@ import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.TileCoordinate;
 import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.Utilities.Pos;
-import com.ai.chainreaction.algorithms.IAlgorithm;
 import com.ai.chainreaction.heuristics.ChainHeuristic;
 import com.ai.chainreaction.heuristics.IHeuristic;
+import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.Stack;
 
 /**
  * Created by Danish on 17-Nov-15.
@@ -29,42 +27,54 @@ public class MiniMax implements IAlgorithm {
     int[][] grid;
     Pos myBestPos;
     IHeuristic heuristic;
+    IStats stats;
+    long time;
+    int statesExanded;
+    int statesMax;
+    int statesCurrent;
 
     ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
     int globalColor;
 
-    int INFINITY=100000;
-    int MINUESINFINITY=-100000;
+    int INFINITY = 100000;
+    int MINUESINFINITY = -100000;
 
-    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic) {
+    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic, IStats stats) {
         this.chainReaction = chainReaction;
         this.tiles = tiles;
         this.depthLimit = depthLimit;
         this.heuristic = heuristic;
+        this.stats = stats;
+        this.time = this.statesExanded = this.statesMax = this.statesCurrent = 0;
         numRows = tiles.length;
         numColumns = tiles[0].length;
         grid = Utilities.initalizeGrid(tiles);
     }
 
-    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit) {
-        this(chainReaction,tiles,depthLimit,new ChainHeuristic());
+    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IStats stats) {
+        this(chainReaction, tiles, depthLimit, new ChainHeuristic(), stats);
     }
 
     public Pos getNextMove(int color) {
-        return getNextMove(this.grid,color);
+        return getNextMove(this.grid, color);
     }
 
     public Pos getNextMove(int[][] grid, int color) {
         this.globalColor = color;
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
-        traverseMinimaxTree(0, true, color,MINUESINFINITY,INFINITY,true);
+        time = System.currentTimeMillis();
+        traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, true);
+        time = System.currentTimeMillis() - time;
+        stats.pushStats(time, statesExanded, statesMax);
+        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
         return myBestPos;
     }
 
-    int traverseMinimaxTree(int currentDepth, boolean Max, int color,int alpha,int beta,boolean pruning) {
+    int traverseMinimaxTree(int currentDepth, boolean Max, int color, int alpha, int beta, boolean pruning) {
 
         int returnValue = 0;
+        statesExanded++;
 
 //        Gdx.app.log("traverse",(numTraverseTreeCalls++)+"");
 
@@ -106,7 +116,7 @@ public class MiniMax implements IAlgorithm {
             clickTile(color, playablePos.row, playablePos.col, grid.length, grid[0].length);
 
             //recursion
-            int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color,MINUESINFINITY,INFINITY,true); //invert the color and minMax node and call for next depth
+            int ret = traverseMinimaxTree(currentDepth + 1, !Max, -color, MINUESINFINITY, INFINITY, pruning); //invert the color and minMax node and call for next depth
             if (Max) {
                 if (ret > max) {
                     max = ret;
@@ -116,7 +126,7 @@ public class MiniMax implements IAlgorithm {
                         myBestPos.col = playablePos.col;
                     }
 
-                    if(pruning) {
+                    if (pruning) {
                         alpha = max(max, alpha);
                         if (beta <= alpha) {
                             revertGrid(backUpGrid, grid);
@@ -133,7 +143,7 @@ public class MiniMax implements IAlgorithm {
                         myBestPos.col = playablePos.col;
                     }
 
-                    if(pruning) {
+                    if (pruning) {
                         beta = min(min, beta);
                         if (beta <= alpha) {
                             revertGrid(backUpGrid, grid);
@@ -152,6 +162,10 @@ public class MiniMax implements IAlgorithm {
     }
 
     int[][] copyGrid(int tiles[][]) {
+        // for Minimax only
+        statesCurrent++;
+        if (statesCurrent > statesMax)
+            statesMax = statesCurrent;
         int newGrid[][] = new int[tiles.length][tiles[0].length];
         for (int row = 0; row < tiles.length; row++) {
             for (int col = 0; col < tiles[0].length; col++) {
@@ -162,6 +176,8 @@ public class MiniMax implements IAlgorithm {
     }
 
     void revertGrid(int[][] source, int[][] destination) {
+        // for Minimax only
+        statesCurrent--;
         for (int row = 0; row < source.length; row++) {
             for (int col = 0; col < source[0].length; col++) {
                 destination[row][col] = source[row][col];
@@ -308,19 +324,15 @@ public class MiniMax implements IAlgorithm {
         return Tile.EMPTY;
     }
 
-    private int max(int x,int y)
-    {
-        if(x>y)
-        {
+    private int max(int x, int y) {
+        if (x > y) {
             return x;
         }
         return y;
     }
 
-    private int min(int x,int y)
-    {
-        if(x<y)
-        {
+    private int min(int x, int y) {
+        if (x < y) {
             return x;
         }
         return y;
