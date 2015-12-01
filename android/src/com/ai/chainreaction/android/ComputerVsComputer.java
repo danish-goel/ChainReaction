@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * Created by danishgoel on 11/28/15.
@@ -19,6 +20,8 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
     public final String PREFS_NAME = "MyPrefsFile";
     int firstChoice = 0;
     int secondChoice = 0;
+    TextView firstPlayer;
+    TextView secondPlayer;
     String[] values;
 
     @Override
@@ -28,10 +31,16 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
 
         final ListView firstList = (ListView) findViewById(R.id.firstList);
         final ListView secondList = (ListView) findViewById(R.id.secondList);
+
+
+        firstPlayer=(TextView)findViewById(R.id.player1);
+        secondPlayer=(TextView)findViewById(R.id.player2);
         Button done = (Button) findViewById(R.id.done);
         done.setOnClickListener(this);
 
-    values = new String[]{"Random",
+    values = new String[]{
+            "Human",
+            "Random",
                 "MiniMax",
                 "Greedy"
         };
@@ -45,6 +54,8 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
         // Assign adapter to ListView
         firstList.setAdapter(firstAdapter);
         secondList.setAdapter(secondAdapter);
+        firstList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        secondList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         // ListView Item Click Listener
         firstList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -54,6 +65,7 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
                                     int position, long id) {
 
                 firstChoice = position;
+                firstPlayer.setText(values[position]);
 
             }
 
@@ -68,6 +80,7 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
 
                 // ListView Clicked item index
                 secondChoice = position;
+                secondPlayer.setText(values[position]);
 
 
             }

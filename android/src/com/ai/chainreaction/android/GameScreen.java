@@ -20,6 +20,10 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
 
+    static boolean FIRSTHUMAN;
+    static boolean SECONDHUMAN;
+    static boolean BOTS;
+    static boolean BOTHHUMAN;
     int firstAlgo;
     int secondAlgo;
 
@@ -44,7 +48,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     int numMoves;
-    int turn;
+    static int turn;
     static int myTurn = 1;
 
     public void recur() {
@@ -121,13 +125,13 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     {
         switch (choice)
         {
-            case 0:
+            case 1:
                 programaticallyMoveRandom(turn);
                 break;
-            case 1:
+            case 2:
                 programaticallyMoveMiniMax(turn);
                 break;
-            case 2:
+            case 3:
                 programaticallyGreedy(turn);
                 break;
             default:
@@ -141,25 +145,45 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
         String first=prefs.getString("firstAlgoName","");
         String second=prefs.getString("secondAlgoName", "");
-        setAlgoChoice(first, firstAlgo);
-        setAlgoChoice(second,secondAlgo);
+        firstAlgo=setAlgoChoice(first);
+        secondAlgo=setAlgoChoice(second);
+        if(firstAlgo==0 && secondAlgo==0)
+        {
+           BOTHHUMAN=true;
+        }
+        else if(firstAlgo==0)
+        {
+            FIRSTHUMAN=true;
+        }
+        else if (secondAlgo==0) {
+            SECONDHUMAN =true;
+        }
+        else
+        {
+            BOTS=true;
+        }
 
     }
 
-    public void setAlgoChoice(String algoName,int choice)
+    int setAlgoChoice(String algoName)
     {
+        if(algoName.equalsIgnoreCase("human"))
+        {
+            return 0;
+        }
         if(algoName.equalsIgnoreCase("random"))
         {
-            choice=0;
+            return 1;
         }
         else if(algoName.equalsIgnoreCase("minimax"))
         {
-            choice=1;
+            return 2;
         }
         else if (algoName.equalsIgnoreCase("greedy"))
         {
-            choice=2;
+            return 3;
         }
+        return 0;
     }
 
 }

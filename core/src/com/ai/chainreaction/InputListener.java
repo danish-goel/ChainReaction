@@ -55,6 +55,7 @@ public class InputListener extends InputAdapter {
                 }
             }
         }
+
     }
 
     public void tileClicked(int color, int currentRow, int currentColumn) {

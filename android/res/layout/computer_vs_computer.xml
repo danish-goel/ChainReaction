@@ -6,7 +6,8 @@
     <ListView
         android:id="@+id/firstList"
         android:layout_width="150dp"
-        android:layout_height="fill_parent"></ListView>
+        android:choiceMode="singleChoice"
+        android:layout_height="300dp"></ListView>
     <RelativeLayout
         android:id="@+id/vs_label_root"
         android:layout_width="wrap_content"
@@ -33,9 +34,32 @@
     <ListView
         android:id="@+id/secondList"
         android:layout_width="150dp"
-        android:layout_height="fill_parent"
+        android:layout_height="300dp"
+        android:choiceMode="singleChoice"
         android:layout_toRightOf="@+id/vs_label_root">
     </ListView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player1"
+        android:id="@+id/player1"
+        android:textSize="18dp"
+        android:layout_below="@+id/firstList"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="45dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player2"
+        android:id="@+id/player2"
+        android:textSize="18dp"
+        android:layout_alignBottom="@+id/player1"
+        android:layout_toRightOf="@+id/vs_label_root"
+        android:layout_toEndOf="@+id/vs_label_root" />
 
 
 </RelativeLayout>
