@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
 import com.ai.chainreaction.algorithms.GreedyAlgorithm;
+import com.ai.chainreaction.algorithms.IAlgorithm;
 import com.ai.chainreaction.algorithms.MiniMax;
 import com.ai.chainreaction.algorithms.RandomAlgorithm;
 import com.ai.chainreaction.Tile;
@@ -83,7 +84,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMiniMax(int player) {
         Log.d("abcd","minimax");
-        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 4, new PieceCountHeuristic());
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 3, new ChainHeuristic(false));
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow=pos.row;
         int moveColumn=pos.col;

@@ -41,7 +41,6 @@ public class MiniMax implements IAlgorithm {
         this.heuristic = heuristic;
         numRows = tiles.length;
         numColumns = tiles[0].length;
-        myBestPos = new Pos(-1, -1);
         grid = Utilities.initalizeGrid(tiles);
     }
 
@@ -55,6 +54,7 @@ public class MiniMax implements IAlgorithm {
 
     public Pos getNextMove(int[][] grid, int color) {
         this.globalColor = color;
+        myBestPos = new RandomAlgorithm().getNextMove(grid, color);
         traverseMinimaxTree(0, true, color);
         return myBestPos;
     }
@@ -69,7 +69,7 @@ public class MiniMax implements IAlgorithm {
         if (checkWinnerIfExists(grid) != Tile.EMPTY) {
             Gdx.app.debug("depth", "" + currentDepth + Max + color);
             int factor = depthLimit - currentDepth + 1;
-            if (Max) {
+            if (!Max) {
                 return 100000 * factor;    //set to -infinity
             } else {
                 return -100000 * factor; //set to +infinity
