@@ -14,17 +14,21 @@ public class Main extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Button human = (Button) findViewById(R.id.humanGameButton);
+        Button human = (Button) findViewById(R.id.settings);
         human.setOnClickListener(this);
-        Button computer = (Button) findViewById(R.id.computerGameButton);
+        Button computer = (Button) findViewById(R.id.startGame);
         computer.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.computerGameButton) {
+        if (v.getId() == R.id.startGame) {
             Intent i=new Intent(this,ComputerVsComputer.class);
             startActivity(i);
+        }
+        else if(v.getId()==R.id.settings)
+        {
+
         }
     }
 }
