@@ -40,7 +40,7 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
         }
         ActionT a = getNodesMostPromisingAction(rootNode);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("mcts(" + numSimulations + ")", player, time, numStatesExpanded, 0);
+        stats.pushStats("mcts " + numSimulations, player, time, numStatesExpanded, 0);
         return a;
     }
 

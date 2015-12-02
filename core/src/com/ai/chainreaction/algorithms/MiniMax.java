@@ -67,7 +67,7 @@ public class MiniMax implements IAlgorithm {
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
         traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, DEFAULT_PRUNING);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("mm("+DEFAULT_PRUNING+""+this.depthLimit+")", color, time, statesExanded, statesMax);
+        stats.pushStats("mm "+this.depthLimit+" "+DEFAULT_PRUNING, color, time, statesExanded, statesMax);
 //        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
         return myBestPos;
     }
