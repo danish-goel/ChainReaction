@@ -15,10 +15,10 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
     private final Cloner cloner;
     int numStatesExpanded;
 
-    public static<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, AgentT extends MctsDomainAgent<StateT>>
-        Mcts<StateT, ActionT, AgentT> initializeIterations(int numberOfIterations) {
-            Cloner cloner = new Cloner();
-            return new Mcts<StateT, ActionT, AgentT>(numberOfIterations, cloner);
+    public static <StateT extends MctsDomainState<ActionT, AgentT>, ActionT, AgentT extends MctsDomainAgent<StateT>>
+    Mcts<StateT, ActionT, AgentT> initializeIterations(int numberOfIterations) {
+        Cloner cloner = new Cloner();
+        return new Mcts<StateT, ActionT, AgentT>(numberOfIterations, cloner);
     }
 
     private Mcts(int numberOfIterations, Cloner cloner) {
@@ -31,7 +31,7 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
         cloner.dontClone(classes);
     }
 
-    public ActionT uctSearchWithExploration(StateT state, double explorationParameter, int player, IStats stats) {
+    public ActionT uctSearchWithExploration(StateT state, double explorationParameter, int numSimulations, int player, IStats stats) {
         long time = System.currentTimeMillis();
         setExplorationForSearch(explorationParameter);
         MctsTreeNode<StateT, ActionT, AgentT> rootNode = new MctsTreeNode<StateT, ActionT, AgentT>(state, cloner);
@@ -40,7 +40,7 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
         }
         ActionT a = getNodesMostPromisingAction(rootNode);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("mcts",player, time, numStatesExpanded,0);
+        stats.pushStats("mcts(" + numSimulations + ")", player, time, numStatesExpanded, 0);
         return a;
     }
 
@@ -110,10 +110,9 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
 
         double maxv = Double.MIN_VALUE;
         MctsTreeNode maxnode = null;
-        for (MctsTreeNode child:node.getChildNodes()) {
+        for (MctsTreeNode child : node.getChildNodes()) {
             double val = calculateUctValue(child, explorationParameter);
-            if (val>maxv)
-            {
+            if (val > maxv) {
                 maxv = val;
                 maxnode = child;
             }

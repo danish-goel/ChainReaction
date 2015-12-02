@@ -26,8 +26,9 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
+    private static final int NUM_MCTS_ITERATIONS = 1000;
 
-    private final Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(500);
+    private final Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(NUM_MCTS_ITERATIONS);
     static boolean FIRSTHUMAN;
     static boolean SECONDHUMAN;
     static boolean BOTS;
@@ -83,7 +84,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMiniMax(int player) {
         Log.d("abcd", "minimax");
-        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 4, new ChainHeuristic(true), this);
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 6, new ChainHeuristic(true), this);
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
@@ -92,7 +93,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMCTS(int player) {
         Log.d("abcd", "mcts");
-        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, player, this);
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, NUM_MCTS_ITERATIONS, player, this);
         int moveRow = pos.row;
         int moveColumn = pos.col;
         programaticallyMove(player, pos.row, pos.col);
@@ -213,7 +214,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     public void pushStats(String algo, int turn, long timeTaken, int numStatesExpanded, int numMaxStatesInMemory) {
         if (turn == Tile.RED) {
             StringBuilder sb = new StringBuilder();
-            sb.append(" P1(");
+            sb.append(" P1blue(");
             sb.append(algo);
             sb.append(")");
             sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
@@ -221,7 +222,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             player1_stats.setText(sb.toString());
         } else if (turn == Tile.BLUE) {
             StringBuilder sb = new StringBuilder();
-            sb.append(" P2(");
+            sb.append(" P2red(");
             sb.append(algo);
             sb.append(")");
             sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
@@ -229,6 +230,6 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             player2_stats.setText(sb.toString());
         }
 
-        Log.d("stats", "algo:"+algo+" t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
+        Log.d("stats", "algo:" + algo + " t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
     }
 }

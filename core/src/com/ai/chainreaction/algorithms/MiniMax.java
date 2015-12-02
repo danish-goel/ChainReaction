@@ -32,6 +32,7 @@ public class MiniMax implements IAlgorithm {
     int statesExanded;
     int statesMax;
     int statesCurrent;
+    private static final boolean DEFAULT_PRUNING = true;
 
     ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
@@ -61,13 +62,13 @@ public class MiniMax implements IAlgorithm {
     }
 
     public Pos getNextMove(int[][] grid, int color) {
+        time = System.currentTimeMillis();
         this.globalColor = color;
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
-        time = System.currentTimeMillis();
-        traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, true);
+        traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, DEFAULT_PRUNING);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("minimax", color, time, statesExanded, statesMax);
-        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
+        stats.pushStats("mm("+DEFAULT_PRUNING+""+this.depthLimit+")", color, time, statesExanded, statesMax);
+//        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
         return myBestPos;
     }
 
