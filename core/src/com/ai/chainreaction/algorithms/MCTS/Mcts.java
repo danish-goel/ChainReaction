@@ -58,11 +58,20 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
         while (!node.representsTerminalState()) {
             numStatesExpanded++;
             if (!node.representedStatesCurrentAgentHasAvailableActions())
-                return expandWithoutAction(node);
+                return node.addNewChildWithoutAction();
+//                return expandWithoutAction(node);
             else if (!node.isFullyExpanded())
-                return expandWithAction(node);
-            else
-                node = getNodesBestChild(node);
+            {
+//                return expandWithAction(node);
+                ActionT randomUntriedAction = getRandomActionFromNodesUntriedActions(node);
+                return node.addNewChildFromAction(randomUntriedAction);
+            }
+            else {
+
+//                node = getNodesBestChild(node);
+                validateBestChildComputable(node);
+                node = getNodesBestChildConfidentlyWithExploration(node, explorationParameter);
+            }
         }
         return node;
     }

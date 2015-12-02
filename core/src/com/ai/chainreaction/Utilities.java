@@ -1,5 +1,15 @@
 package com.ai.chainreaction;
 
+import com.ai.chainreaction.algorithms.GreedyAlgorithm;
+import com.ai.chainreaction.algorithms.MCTS.ChainReactionPlayer;
+import com.ai.chainreaction.algorithms.MCTS.ChainReactionState;
+import com.ai.chainreaction.algorithms.MCTS.Mcts;
+import com.ai.chainreaction.algorithms.MiniMax;
+import com.ai.chainreaction.algorithms.RandomAlgorithm;
+import com.ai.chainreaction.heuristics.ChainHeuristic;
+import com.ai.chainreaction.heuristics.IHeuristic;
+import com.ai.chainreaction.heuristics.PieceCountHeuristic;
+import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
@@ -14,7 +24,7 @@ import java.util.Stack;
 /**
  * Created by Manan on 18-11-2015.
  */
-public class Utilities {
+public class Utilities{
 
     public static class Pos {
         public Pos(int row, int col) {
@@ -187,6 +197,7 @@ public class Utilities {
             return Tile.BLUE;
         if (foundRed)
             return Tile.RED;
+        System.out.printf("Reached Here");
         return Tile.EMPTY;
     }
 
@@ -205,7 +216,7 @@ public class Utilities {
         while (!tilesToBeClicked.isEmpty()) {
 //            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
             if (count % 1 == 0) {
-                if (checkWinnerIfExists(grid) != Tile.EMPTY) {
+                if (checkWinnerIfExists(grid)==color) {
                     return;
                 }
             }
@@ -225,6 +236,7 @@ public class Utilities {
 
     private static Queue<TileCoordinate> explodedTiles(int[][] grid, int color, int currentRow, int currentColumn) {
 //        Gdx.app.log("explode", ChainReaction.debug + " debug");
+//        System.out.println("Came Here Queue");
         int totalRows = grid.length;
         int totalColumns = grid[0].length;
         int cur = grid[currentRow][currentColumn];
@@ -285,6 +297,51 @@ public class Utilities {
             }
         }
     }
+
+
+    public static void programaticallyMoveMiniMax(int[][] grid, int player, int depth, boolean pruning, int heuristic, IStats stats) {
+//        Log.d("abcd", "minimax");
+        int[][] newgrid = new int[grid.length][grid[0].length];
+        newgrid = copyGrid(grid);
+        MiniMax miniMax = new MiniMax(grid, depth, pruning, ((heuristic==0)?new PieceCountHeuristic():new ChainHeuristic(true)), stats);
+        Utilities.Pos pos = miniMax.getNextMove(player);
+        int moveRow = pos.row;
+        int moveColumn = pos.col;
+//        programaticallyMove(player, pos.row, pos.col);
+//        System.out.println("Clicking (" + moveRow + ", " + moveColumn + ")");
+        revertGrid(newgrid, grid);
+        clickTile(grid, player, moveRow, moveColumn);
+    }
+
+    public static void programaticallyMoveMCTS(int[][] grid, int player, int iterations, IStats stats) {
+//        Log.d("abcd", "mcts");
+        Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(iterations);
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(grid, (player + 1) / 2), 0.2, iterations, player, stats);
+        int moveRow = pos.row;
+        int moveColumn = pos.col;
+//        programaticallyMove(player, pos.row, pos.col);
+        clickTile(grid, player, moveRow, moveColumn);
+
+    }
+
+    public static void programaticallyGreedy(int[][] grid, int player) {
+//        Log.d("abcd", "greedy");
+        Utilities.Pos pos = new GreedyAlgorithm().getNextMove(grid, player);
+        int moveRow = pos.row;
+        int moveColumn = pos.col;
+//        programaticallyMove(player, pos.row, pos.col);
+        clickTile(grid, player, moveRow, moveColumn);
+    }
+
+    public static void programaticallyMoveRandom(int[][] grid, int player) {
+//        Log.d("abcd", "random");
+        Utilities.Pos pos = new RandomAlgorithm().getNextMove(grid, player);
+        int randomMoveRow = pos.row;
+        int randomMoveColumn = pos.col;
+//        programaticallyMove(player, pos.row, pos.col);
+        clickTile(grid, player, randomMoveRow, randomMoveColumn);
+    }
+
 
 
 }

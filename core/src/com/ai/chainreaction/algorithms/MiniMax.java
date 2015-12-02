@@ -83,7 +83,7 @@ public class MiniMax implements IAlgorithm {
 
         //base case when the depth is reached
         if (checkWinnerIfExists(grid) != Tile.EMPTY) {
-            Gdx.app.debug("depth", "" + currentDepth + Max + color);
+//            Gdx.app.debug("depth", "" + currentDepth + Max + color);
             int factor = depthLimit - currentDepth + 1;
             if (!Max) {
                 return INFINITY * factor;    //set to -infinity
