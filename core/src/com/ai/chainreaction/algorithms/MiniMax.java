@@ -7,6 +7,7 @@ import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.Utilities.Pos;
 import com.ai.chainreaction.heuristics.ChainHeuristic;
 import com.ai.chainreaction.heuristics.IHeuristic;
+import com.ai.chainreaction.heuristics.PieceCountHeuristic;
 import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.Gdx;
 
@@ -32,7 +33,7 @@ public class MiniMax implements IAlgorithm {
     int statesExanded;
     int statesMax;
     int statesCurrent;
-    private static final boolean DEFAULT_PRUNING = true;
+    boolean pruning;
 
 //    ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
@@ -41,7 +42,7 @@ public class MiniMax implements IAlgorithm {
     int INFINITY = 100000;
     int MINUESINFINITY = -100000;
 
-    public MiniMax(int[][] grid, int depthLimit, IHeuristic heuristic, IStats stats) {
+    public MiniMax(int[][] grid, int depthLimit, boolean pruning, IHeuristic heuristic, IStats stats) {
 //        this.chainReaction = chainReaction;
 //        this.tiles = tiles;
         this.depthLimit = depthLimit;
@@ -49,13 +50,14 @@ public class MiniMax implements IAlgorithm {
         this.stats = stats;
         this.time = this.statesExanded = this.statesMax = this.statesCurrent = 0;
         this.grid = grid;
+        this.pruning=pruning;
         numRows = grid.length;
         numColumns = grid[0].length;
     }
 
-    public MiniMax(int[][] grid, int depthLimit, IStats stats) {
-        this(grid, depthLimit, new ChainHeuristic(), stats);
-    }
+//    public MiniMax(int[][] grid, int depthLimit, IStats stats) {
+//        this(grid, depthLimit, new ChainHeuristic(), stats);
+//    }
 
     public Pos getNextMove(int color) {
         return getNextMove(this.grid, color);
@@ -65,9 +67,9 @@ public class MiniMax implements IAlgorithm {
         time = System.currentTimeMillis();
         this.globalColor = color;
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
-        traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, DEFAULT_PRUNING);
+        traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, pruning);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("mm "+this.depthLimit+" "+DEFAULT_PRUNING, color, time, statesExanded, statesMax);
+        stats.pushStats("mm "+this.depthLimit+" "+ pruning + " "+(heuristic.getClass() == PieceCountHeuristic.class ? "pw":"chain"), color, time, statesExanded, statesMax);
 //        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
         return myBestPos;
     }

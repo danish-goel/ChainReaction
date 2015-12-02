@@ -12,12 +12,15 @@ import com.ai.chainreaction.ChainReaction;
 import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.algorithms.GreedyAlgorithm;
+import com.ai.chainreaction.algorithms.IAlgorithm;
 import com.ai.chainreaction.algorithms.MCTS.ChainReactionPlayer;
 import com.ai.chainreaction.algorithms.MCTS.ChainReactionState;
 import com.ai.chainreaction.algorithms.MCTS.Mcts;
 import com.ai.chainreaction.algorithms.MiniMax;
 import com.ai.chainreaction.algorithms.RandomAlgorithm;
 import com.ai.chainreaction.heuristics.ChainHeuristic;
+import com.ai.chainreaction.heuristics.IHeuristic;
+import com.ai.chainreaction.heuristics.PieceCountHeuristic;
 import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -26,10 +29,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
-    private static final int NUM_MCTS_ITERATIONS = 1000;
-    private static final int DEPTH_MINIMAX = 5;
 
-    private final Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(NUM_MCTS_ITERATIONS);
     static boolean FIRSTHUMAN;
     static boolean SECONDHUMAN;
     static boolean BOTS;
@@ -83,18 +83,19 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         nextMove();
     }
 
-    public void programaticallyMoveMiniMax(int player) {
+    public void programaticallyMoveMiniMax(int player, int depth, boolean pruning, int heuristic) {
         Log.d("abcd", "minimax");
-        MiniMax miniMax = new MiniMax(Utilities.initalizeGrid(chainReaction.tiles), DEPTH_MINIMAX, new ChainHeuristic(true), this);
+        MiniMax miniMax = new MiniMax(Utilities.initalizeGrid(chainReaction.tiles), depth, pruning, ((heuristic==0)?new PieceCountHeuristic():new ChainHeuristic(true)), this);
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
-    public void programaticallyMoveMCTS(int player) {
+    public void programaticallyMoveMCTS(int player, int iterations) {
         Log.d("abcd", "mcts");
-        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, NUM_MCTS_ITERATIONS, player, this);
+        Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(iterations);
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, iterations, player, this);
         int moveRow = pos.row;
         int moveColumn = pos.col;
         programaticallyMove(player, pos.row, pos.col);
@@ -164,13 +165,29 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
                 programaticallyMoveRandom(turn);
                 break;
             case 2:
-                programaticallyMoveMiniMax(turn);
+                int depth = 4;
+                boolean pruning = true;
+                int heuristic = 0;
+                if(turn==Tile.BLUE)
+                {
+                    depth = MiniMaxArguments.firstdepth;
+                    pruning = MiniMaxArguments.firstpruning;
+                    heuristic = MiniMaxArguments.firstheuristics;
+                }
+                else
+                {
+                    depth = MiniMaxArguments.seconddepth;
+                    pruning = MiniMaxArguments.secondpruning;
+                    heuristic = MiniMaxArguments.secondheuristics;
+                }
+                programaticallyMoveMiniMax(turn, depth, pruning, heuristic);
                 break;
             case 3:
                 programaticallyGreedy(turn);
                 break;
             case 4:
-                programaticallyMoveMCTS(turn);
+                int simulations = 700;
+                programaticallyMoveMCTS(turn, simulations);
                 break;
         }
     }
