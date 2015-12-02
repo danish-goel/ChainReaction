@@ -34,7 +34,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     static boolean BOTHHUMAN;
     int firstAlgo;
     int secondAlgo;
-    TextView player1_stats,player2_stats;
+    TextView player1_stats, player2_stats;
 
     //    int grid[][];
     @Override
@@ -44,11 +44,11 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         getAlgoChoice();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         chainReaction = new com.ai.chainreaction.ChainReaction(this);
-        FrameLayout fl=((FrameLayout) findViewById(R.id.fl));
-                fl.addView(initializeForView(chainReaction, config));
+        FrameLayout fl = ((FrameLayout) findViewById(R.id.fl));
+        fl.addView(initializeForView(chainReaction, config));
 
-        player1_stats=(TextView)findViewById(R.id.player1stats);
-       player2_stats=(TextView)findViewById(R.id.player2stats);
+        player1_stats = (TextView) findViewById(R.id.player1stats);
+        player2_stats = (TextView) findViewById(R.id.player2stats);
 
 //        grid=new int[chainReaction.boardRows][chainReaction.boardCols];
 //        initalizeGrid(chainReaction.tiles);
@@ -91,10 +91,10 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveMCTS(int player) {
-        Log.d("abcd","mcts");
-        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2);
-        int moveRow=pos.row;
-        int moveColumn=pos.col;
+        Log.d("abcd", "mcts");
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, player, this);
+        int moveRow = pos.row;
+        int moveColumn = pos.col;
         programaticallyMove(player, pos.row, pos.col);
     }
 
@@ -203,33 +203,32 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             return 2;
         } else if (algoName.equalsIgnoreCase("greedy")) {
             return 3;
-        }
-        else if(algoName.equalsIgnoreCase("mcts"))
-        {
+        } else if (algoName.equalsIgnoreCase("mcts")) {
             return 4;
         }
         return 0;
     }
 
     @Override
-    public void pushStats(long timeTaken, int numStatesExpanded, int numMaxStatesInMemory) {
-        int turn=-1;
-        if(turn==-1) {
+    public void pushStats(String algo, int turn, long timeTaken, int numStatesExpanded, int numMaxStatesInMemory) {
+        if (turn == Tile.RED) {
             StringBuilder sb = new StringBuilder();
-            sb.append(" Player1");
-            sb.append(" Time: " + timeTaken/1000+"s" + "\t");
+            sb.append(" P1(");
+            sb.append(algo);
+            sb.append(")");
+            sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
             sb.append(" States: " + numStatesExpanded + "\t");
             player1_stats.setText(sb.toString());
-        }
-        else if(turn==1)
-        {
+        } else if (turn == Tile.BLUE) {
             StringBuilder sb = new StringBuilder();
-            sb.append(" Player2");
-            sb.append(" Time: " + timeTaken/1000+"s" + "\t");
+            sb.append(" P2(");
+            sb.append(algo);
+            sb.append(")");
+            sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
             sb.append(" States: " + numStatesExpanded + "\t");
             player2_stats.setText(sb.toString());
         }
 
-        Log.d("stats", "t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
+        Log.d("stats", "algo:"+algo+" t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
     }
 }

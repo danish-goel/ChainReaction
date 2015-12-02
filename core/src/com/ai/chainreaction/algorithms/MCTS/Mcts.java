@@ -1,5 +1,6 @@
 package com.ai.chainreaction.algorithms.MCTS;
 
+import com.ai.chainreaction.stats.IStats;
 import com.rits.cloning.Cloner;
 
 import java.util.Collections;
@@ -12,6 +13,7 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
     private final int numberOfIterations;
     private double explorationParameter;
     private final Cloner cloner;
+    int numStatesExpanded;
 
     public static<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, AgentT extends MctsDomainAgent<StateT>>
         Mcts<StateT, ActionT, AgentT> initializeIterations(int numberOfIterations) {
@@ -22,19 +24,24 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
     private Mcts(int numberOfIterations, Cloner cloner) {
         this.numberOfIterations = numberOfIterations;
         this.cloner = cloner;
+        this.numStatesExpanded = 0;
     }
 
     public void dontClone(final Class<?>... classes) {
         cloner.dontClone(classes);
     }
 
-    public ActionT uctSearchWithExploration(StateT state, double explorationParameter) {
+    public ActionT uctSearchWithExploration(StateT state, double explorationParameter, int player, IStats stats) {
+        long time = System.currentTimeMillis();
         setExplorationForSearch(explorationParameter);
         MctsTreeNode<StateT, ActionT, AgentT> rootNode = new MctsTreeNode<StateT, ActionT, AgentT>(state, cloner);
         for (int i = 0; i < numberOfIterations; i++) {
             performMctsIteration(rootNode, state.getCurrentAgent());
         }
-        return getNodesMostPromisingAction(rootNode);
+        ActionT a = getNodesMostPromisingAction(rootNode);
+        time = System.currentTimeMillis() - time;
+        stats.pushStats("mcts",player, time, numStatesExpanded,0);
+        return a;
     }
 
     private void setExplorationForSearch(double explorationParameter) {
@@ -49,6 +56,7 @@ public class Mcts<StateT extends MctsDomainState<ActionT, AgentT>, ActionT, Agen
 
     private MctsTreeNode<StateT, ActionT, AgentT> treePolicy(MctsTreeNode<StateT, ActionT, AgentT> node) {
         while (!node.representsTerminalState()) {
+            numStatesExpanded++;
             if (!node.representedStatesCurrentAgentHasAvailableActions())
                 return expandWithoutAction(node);
             else if (!node.isFullyExpanded())

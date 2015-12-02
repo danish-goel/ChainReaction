@@ -5,6 +5,6 @@ package com.ai.chainreaction.stats;
  */
 public interface IStats {
 
-    public void pushStats(long timeTaken, int numStatesExpanded, int numMaxStatesInMemory);
+    public void pushStats(String algo, int turn, long timeTaken, int numStatesExpanded, int numMaxStatesInMemory);
 
 }
