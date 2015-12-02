@@ -20,7 +20,7 @@ import java.util.Queue;
  */
 public class MiniMax implements IAlgorithm {
 
-    Tile[][] tiles;
+//    Tile[][] tiles;
     int depthLimit;
     int numRows;
     int numColumns;
@@ -34,27 +34,27 @@ public class MiniMax implements IAlgorithm {
     int statesCurrent;
     private static final boolean DEFAULT_PRUNING = true;
 
-    ChainReaction chainReaction;
+//    ChainReaction chainReaction;
     static int numTraverseTreeCalls = 0;
     int globalColor;
 
     int INFINITY = 100000;
     int MINUESINFINITY = -100000;
 
-    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IHeuristic heuristic, IStats stats) {
-        this.chainReaction = chainReaction;
-        this.tiles = tiles;
+    public MiniMax(int[][] grid, int depthLimit, IHeuristic heuristic, IStats stats) {
+//        this.chainReaction = chainReaction;
+//        this.tiles = tiles;
         this.depthLimit = depthLimit;
         this.heuristic = heuristic;
         this.stats = stats;
         this.time = this.statesExanded = this.statesMax = this.statesCurrent = 0;
-        numRows = tiles.length;
-        numColumns = tiles[0].length;
-        grid = Utilities.initalizeGrid(tiles);
+        this.grid = grid;
+        numRows = grid.length;
+        numColumns = grid[0].length;
     }
 
-    public MiniMax(ChainReaction chainReaction, Tile[][] tiles, int depthLimit, IStats stats) {
-        this(chainReaction, tiles, depthLimit, new ChainHeuristic(), stats);
+    public MiniMax(int[][] grid, int depthLimit, IStats stats) {
+        this(grid, depthLimit, new ChainHeuristic(), stats);
     }
 
     public Pos getNextMove(int color) {
@@ -67,7 +67,7 @@ public class MiniMax implements IAlgorithm {
         myBestPos = new RandomAlgorithm().getNextMove(grid, color);
         traverseMinimaxTree(0, true, color, MINUESINFINITY, INFINITY, DEFAULT_PRUNING);
         time = System.currentTimeMillis() - time;
-        stats.pushStats("mm("+DEFAULT_PRUNING+""+this.depthLimit+")", color, time, statesExanded, statesMax);
+        stats.pushStats("mm(" + DEFAULT_PRUNING + ""+this.depthLimit+")", color, time, statesExanded, statesMax);
 //        System.out.println("statsXX "+"t:"+time+" sE:"+statesExanded+" sM:"+statesMax);
         return myBestPos;
     }
