@@ -154,8 +154,8 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
                 programaticallyMoveRandom(turn);
                 break;
             case 2:
-//                programaticallyMoveMiniMax(turn);
-                programaticallyMoveMCTS(turn);
+                programaticallyMoveMiniMax(turn);
+//                programaticallyMoveMCTS(turn);
                 break;
             case 3:
                 programaticallyGreedy(turn);
