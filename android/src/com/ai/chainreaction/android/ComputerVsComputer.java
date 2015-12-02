@@ -43,6 +43,7 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
             "Random",
                 "MiniMax",
                 "Greedy"
+            ,"MCTS"
         };
 
         ArrayAdapter<String> firstAdapter = new ArrayAdapter<String>(this,

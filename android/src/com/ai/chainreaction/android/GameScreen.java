@@ -71,7 +71,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMiniMax(int player) {
         Log.d("abcd", "minimax");
-        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 3, new ChainHeuristic(true), this);
+        MiniMax miniMax = new MiniMax(chainReaction, chainReaction.tiles, 4, new ChainHeuristic(true), this);
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
@@ -147,6 +147,8 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             case 3:
                 programaticallyGreedy(turn);
                 break;
+            case 4:
+                break;
             default:
                 break;
         }
@@ -182,6 +184,10 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             return 2;
         } else if (algoName.equalsIgnoreCase("greedy")) {
             return 3;
+        }
+        else if(algoName.equalsIgnoreCase("mcts"))
+        {
+            return 4;
         }
         return 0;
     }
