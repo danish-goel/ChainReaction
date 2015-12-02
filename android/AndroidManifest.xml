@@ -43,10 +43,19 @@
         </activity>
 
         <activity
-            android:name=".MiniMaxArguments"
+        android:name=".MiniMaxArguments"
+        android:label="@string/app_name">
+        <intent-filter>
+            <action android:name="com.ai.chainreaction.MiniMaxArguments" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </activity>
+
+        <activity
+            android:name=".MCTSArguments"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="com.ai.chainreaction.MiniMaxArguments" />
+                <action android:name="com.ai.chainreaction.MCTSArguments" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

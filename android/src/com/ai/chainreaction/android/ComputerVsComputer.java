@@ -77,6 +77,16 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
                     startActivity(i);
                 }
 
+                if(position==4)
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("side", 0);
+                    Intent i = new Intent(ComputerVsComputer.this, MCTSArguments.class);
+                    i.putExtras(b);
+                    startActivity(i);
+                }
+
+
             }
 
         });
@@ -96,6 +106,14 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
                     Bundle b = new Bundle();
                     b.putInt("side",1);
                     Intent i = new Intent(ComputerVsComputer.this, MiniMaxArguments.class);
+                    i.putExtras(b);
+                    startActivity(i);
+                }
+                if(position==4)
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("side", 1);
+                    Intent i = new Intent(ComputerVsComputer.this, MCTSArguments.class);
                     i.putExtras(b);
                     startActivity(i);
                 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -13,15 +14,16 @@ import android.widget.TextView;
 /**
  * Created by danishgoel on 12/2/15.
  */
-public class MiniMaxArguments extends Activity
+public class MiniMaxArguments extends Activity implements View.OnClickListener
 {
-    static int firstdepth=0;
+    static int firstdepth=2;
     static int firstheuristics=0;
     static boolean firstpruning=true;
-    static int seconddepth=0;
+    static int seconddepth=2;
     static int secondheuristics=0;
     static boolean secondpruning=true;
     TextView depthView;
+    Button done;
     int side;
 
     @Override
@@ -35,6 +37,8 @@ public class MiniMaxArguments extends Activity
 
         CheckBox chkIos = (CheckBox) findViewById(R.id.pruning);
         depthView=(TextView)findViewById(R.id.depth_view);
+        done=(Button)findViewById(R.id.minimaxargs);
+        done.setOnClickListener(this);
 
         chkIos.setOnClickListener(new View.OnClickListener() {
 
@@ -114,6 +118,15 @@ public class MiniMaxArguments extends Activity
             }
         });
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId()==R.id.minimaxargs)
+        {
+            finish();
+        }
 
     }
 }
