@@ -1,7 +1,10 @@
 package com.ai.chainreaction.android;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.FrameLayout;
@@ -25,6 +28,16 @@ import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Calendar;
+
 public class GameScreen extends AndroidApplication implements ChainReaction.GameCallback, IStats {
 
     ChainReaction chainReaction;
@@ -45,7 +58,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         setContentView(R.layout.game_layout);
         getAlgoChoice();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        chainReaction = new com.ai.chainreaction.ChainReaction(this);
+        chainReaction = new com.ai.chainreaction.ChainReaction(this, getRowsFromUser(), getColumnsFromUser());
         FrameLayout fl = ((FrameLayout) findViewById(R.id.fl));
         fl.addView(initializeForView(chainReaction, config));
 
@@ -125,11 +138,12 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     @Override
-    public void gameOver() {
+    public void gameOver(final int turn) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), "loser loser chicken dinner :P ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), (turn==Tile.BLUE?"red":"blue")+" won B)", Toast.LENGTH_SHORT).show();
+                writeToFile("myFile.txt",turn==Tile.BLUE?"P1 red":"P2 blue");
             }
         });
     }
@@ -187,6 +201,14 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
                 break;
             case 4:
                 int simulations = 700;
+                if(turn==Tile.BLUE)
+                {
+                    simulations = MCTSArguments.firstIterion;
+                }
+                else
+                {
+                    simulations = MCTSArguments.secondIteration;
+                }
                 programaticallyMoveMCTS(turn, simulations);
                 break;
         }
@@ -263,6 +285,31 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             player1_stats.setText(sb.toString());
         }
 
-        Log.d("stats", algo + " " + timeTaken + " " +numStatesExpanded);
+        String text ="";
+        if (turn == Tile.RED) {
+            text+="P2 ";
+        }
+        else
+        {
+            text+="P1 ";
+        }
+        text +=  algo + " " + timeTaken + " " +numStatesExpanded;
+        Log.d("stats", text);
+        writeToFile("myFile.txt",text);
+
     }
+
+    public void writeToFile(String fileName, String text) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),fileName);
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "utf-8"))) {
+            writer.write("\n");
+            writer.write(Calendar.getInstance().getTime().toString() +" " + text);
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
+    }
+
 }

@@ -46,7 +46,7 @@ public class InputListener extends InputAdapter {
 //                        chainreaction.moves--;
                     }
                     if (chainreaction.checkWinnerSimple() != Tile.EMPTY) {
-                        chainreaction.gc.gameOver();
+                        chainreaction.gc.gameOver(chainreaction.checkWinnerSimple());
                         chainreaction.gameOver = true;
                     }
 //                    chainreaction.turn = -1 * chainreaction.turn;
@@ -76,7 +76,7 @@ public class InputListener extends InputAdapter {
                 int winnerColor=chainreaction.checkWinnerSimple();
                 if (winnerColor != Tile.EMPTY && color==winnerColor) {
                     chainreaction.gameOver = true;
-                    chainreaction.gc.gameOver();
+                    chainreaction.gc.gameOver(chainreaction.checkWinnerSimple());
                     return;
                 }
             }

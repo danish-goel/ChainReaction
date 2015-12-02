@@ -72,6 +72,7 @@ public class MiniMaxArguments extends Activity implements View.OnClickListener
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChanged = progress;
+                depthView.setText(progressChanged+"");
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {

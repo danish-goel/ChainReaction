@@ -64,6 +64,12 @@
             android:layout_height="wrap_content"
             android:max="6"/>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="copy file"
+                android:onClick="sendFile"/>
+
         </LinearLayout>
         </RelativeLayout>
 

@@ -31,14 +31,15 @@ public class ChainReaction extends ApplicationAdapter {
     public boolean gameOver = false;
 
     public InputListener inputListener;
-    float simulationIntervalTimerBetweenTurns = (float) 0;
 
     public static int debug = 0;
     GameCallback gc;
     int moves;
 
-    public ChainReaction(GameCallback gc) {
+    public ChainReaction(GameCallback gc, int rowSize, int colSize) {
         this.gc = gc;
+        this.boardRows = rowSize;
+        this.boardCols = colSize;
     }
 
     @Override
@@ -142,7 +143,7 @@ public class ChainReaction extends ApplicationAdapter {
     }
 
     public interface GameCallback {
-        public void gameOver();
+        public void gameOver(int turn);
         public void nextMove();
     }
 
