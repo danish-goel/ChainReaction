@@ -195,6 +195,23 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     }
 
+    public int getRowsFromUser() {
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+        int rows = prefs.getInt("rows",4);
+        return rows;
+
+    }
+
+    public int getColumnsFromUser() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+        int columns = prefs.getInt("columns",4);
+        return columns;
+
+    }
+
+
     int setAlgoChoice(String algoName) {
         if (algoName.equalsIgnoreCase("human")) {
             return 0;
