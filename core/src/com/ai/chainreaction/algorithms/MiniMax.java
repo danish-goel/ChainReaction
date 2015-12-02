@@ -236,10 +236,10 @@ public class MiniMax implements IAlgorithm {
         Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
         TileCoordinate start = new TileCoordinate(currentRow, currentColumn);
         tilesToBeClicked.add(start);
-        Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
+//        Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
         int count = 0;
         while (!tilesToBeClicked.isEmpty()) {
-            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
+//            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
             if (count % 1 == 0) {
                 if (checkWinnerIfExists(grid) != Tile.EMPTY) {
                     return;
@@ -248,19 +248,19 @@ public class MiniMax implements IAlgorithm {
             count++;
 
             TileCoordinate clickThisTileCoordinate = tilesToBeClicked.remove();
-            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
-            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
+//            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
+//            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
             Queue<TileCoordinate> returnedTiles = explodedTiles(color, clickThisTileCoordinate.row, clickThisTileCoordinate.col, totalRows, totalColumns);
             if (returnedTiles.size() > 0) {
                 tilesToBeClicked.addAll(returnedTiles);
 
             }
         }
-        Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
+//        Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
     }
 
     Queue<TileCoordinate> explodedTiles(int color, int currentRow, int currentColumn, int totalRows, int totalColumns) {
-        Gdx.app.log("explode", ChainReaction.debug + " debug");
+//        Gdx.app.log("explode", ChainReaction.debug + " debug");
 
         int cur = grid[currentRow][currentColumn];
         cur = Math.abs(cur) + 1;

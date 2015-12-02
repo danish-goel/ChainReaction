@@ -200,10 +200,10 @@ public class Utilities {
         Queue<TileCoordinate> tilesToBeClicked = new LinkedList<TileCoordinate>();
         TileCoordinate start = new TileCoordinate(currentRow, currentColumn);
         tilesToBeClicked.add(start);
-        Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
+//        Gdx.app.log("start", "r:" + currentRow + " c:" + currentColumn + "color:" + color);
         int count = 0;
         while (!tilesToBeClicked.isEmpty()) {
-            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
+//            Gdx.app.log("moves", "qSize: " + tilesToBeClicked.size());
             if (count % 1 == 0) {
                 if (checkWinnerIfExists(grid) != Tile.EMPTY) {
                     return;
@@ -212,19 +212,19 @@ public class Utilities {
             count++;
 
             TileCoordinate clickThisTileCoordinate = tilesToBeClicked.remove();
-            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
-            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
+//            Gdx.app.log("minimax", "x" + currentRow + "y" + currentColumn);
+//            Gdx.app.log("minimax", "x" + clickThisTileCoordinate.row + "y" + clickThisTileCoordinate.col);
             Queue<TileCoordinate> returnedTiles = explodedTiles(grid, color, clickThisTileCoordinate.row, clickThisTileCoordinate.col);
             if (returnedTiles.size() > 0) {
                 tilesToBeClicked.addAll(returnedTiles);
 
             }
         }
-        Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
+//        Gdx.app.log("start complete", ChainReaction.debug + " r:" + currentRow + " c:" + currentColumn);
     }
 
     private static Queue<TileCoordinate> explodedTiles(int[][] grid, int color, int currentRow, int currentColumn) {
-        Gdx.app.log("explode", ChainReaction.debug + " debug");
+//        Gdx.app.log("explode", ChainReaction.debug + " debug");
         int totalRows = grid.length;
         int totalColumns = grid[0].length;
         int cur = grid[currentRow][currentColumn];
