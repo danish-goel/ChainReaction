@@ -27,7 +27,6 @@
         android:layout_below="@id/rows_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        min
         android:max="9"/>
 
         <LinearLayout
