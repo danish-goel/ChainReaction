@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ai.chainreaction.ChainReaction;
@@ -32,15 +34,21 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     static boolean BOTHHUMAN;
     int firstAlgo;
     int secondAlgo;
+    TextView player1_stats,player2_stats;
 
     //    int grid[][];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.game_layout);
         getAlgoChoice();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         chainReaction = new com.ai.chainreaction.ChainReaction(this);
-        initialize(chainReaction, config);
+        FrameLayout fl=((FrameLayout) findViewById(R.id.fl));
+                fl.addView(initializeForView(chainReaction, config));
+
+        player1_stats=(TextView)findViewById(R.id.player1stats);
+       player2_stats=(TextView)findViewById(R.id.player2stats);
 
 //        grid=new int[chainReaction.boardRows][chainReaction.boardCols];
 //        initalizeGrid(chainReaction.tiles);
@@ -84,7 +92,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMCTS(int player) {
         Log.d("abcd","mcts");
-        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player+1)/2), 0.2);
+        Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2);
         int moveRow=pos.row;
         int moveColumn=pos.col;
         programaticallyMove(player, pos.row, pos.col);
@@ -205,6 +213,23 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     @Override
     public void pushStats(long timeTaken, int numStatesExpanded, int numMaxStatesInMemory) {
+        int turn=-1;
+        if(turn==-1) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" Player1");
+            sb.append(" Time: " + timeTaken/1000+"s" + "\t");
+            sb.append(" States: " + numStatesExpanded + "\t");
+            player1_stats.setText(sb.toString());
+        }
+        else if(turn==1)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" Player2");
+            sb.append(" Time: " + timeTaken/1000+"s" + "\t");
+            sb.append(" States: " + numStatesExpanded + "\t");
+            player2_stats.setText(sb.toString());
+        }
+
         Log.d("stats", "t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
     }
 }
