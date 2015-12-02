@@ -108,11 +108,11 @@ public class Simulate implements IStats{
 
             if (winner==Tile.RED) {
                 win_Red++;
-                System.out.println(" Iter " + i + " : Winner RED");
+//                System.out.println(" Iter " + i + " : Winner RED");
             }
             else {
                 win_Blue++;
-                System.out.println("Iter " + i + " : Winner BLUE");
+//                System.out.println("Iter " + i + " : Winner BLUE");
             }
         }
 
@@ -125,10 +125,10 @@ public class Simulate implements IStats{
     public static void main(String[] args) {
 
         Simulate s = new Simulate();
-        minimaxvsrandom(100, 4, 0, true, s);
-        minimaxvsrandom(100, 4, 0, false, s);
-        minimaxvsrandom(100, 4, 1, true, s);
-        minimaxvsrandom(100, 4, 1, false, s);
+//        minimaxvsrandom(100, 4, 0, true, s);
+//        minimaxvsrandom(100, 4, 0, false, s);
+//        minimaxvsrandom(100, 4, 1, true, s);
+//        minimaxvsrandom(100, 4, 1, false, s);
 
         minimaxvsrandom(100, 3, 0, true, s);
         minimaxvsrandom(100, 3, 0, false, s);

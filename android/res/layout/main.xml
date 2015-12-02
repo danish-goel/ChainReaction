@@ -15,12 +15,6 @@
             android:layout_height="wrap_content"
             android:text="Start Game" />
 
-        <Button
-            android:id="@+id/settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/startGame"
-            android:text="Settings" />
     </RelativeLayout>
 
 
