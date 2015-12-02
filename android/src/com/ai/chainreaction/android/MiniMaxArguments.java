@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 /**
  * Created by danishgoel on 12/2/15.
@@ -20,6 +21,7 @@ public class MiniMaxArguments extends Activity
     static int seconddepth=0;
     static int secondheuristics=0;
     static boolean secondpruning=true;
+    TextView depthView;
     int side;
 
     @Override
@@ -32,6 +34,7 @@ public class MiniMaxArguments extends Activity
         side = b.getInt("side");
 
         CheckBox chkIos = (CheckBox) findViewById(R.id.pruning);
+        depthView=(TextView)findViewById(R.id.depth_view);
 
         chkIos.setOnClickListener(new View.OnClickListener() {
 
@@ -72,6 +75,7 @@ public class MiniMaxArguments extends Activity
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
+                depthView.setText(progressChanged+"");
                 if (side == 0) {
                     MiniMaxArguments.this.firstdepth = progressChanged;
                 } else {
