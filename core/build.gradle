@@ -9,3 +9,8 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 eclipse.project {
     name = appName + "-core"
 }
+
+dependencies {
+    compile files('libs/cloning-1.9.2.jar')
+    compile files('libs/objenesis-tck-2.2.jar')
+}
