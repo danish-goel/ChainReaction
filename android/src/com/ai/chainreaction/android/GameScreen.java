@@ -27,6 +27,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     ChainReaction chainReaction;
     public final String PREFS_NAME = "MyPrefsFile";
     private static final int NUM_MCTS_ITERATIONS = 1000;
+    private static final int DEPTH_MINIMAX = 5;
 
     private final Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(NUM_MCTS_ITERATIONS);
     static boolean FIRSTHUMAN;
@@ -84,7 +85,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
 
     public void programaticallyMoveMiniMax(int player) {
         Log.d("abcd", "minimax");
-        MiniMax miniMax = new MiniMax(Utilities.initalizeGrid(chainReaction.tiles), 5, new ChainHeuristic(true), this);
+        MiniMax miniMax = new MiniMax(Utilities.initalizeGrid(chainReaction.tiles), DEPTH_MINIMAX, new ChainHeuristic(true), this);
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
@@ -214,22 +215,20 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     public void pushStats(String algo, int turn, long timeTaken, int numStatesExpanded, int numMaxStatesInMemory) {
         if (turn == Tile.RED) {
             StringBuilder sb = new StringBuilder();
-            sb.append(" P1blue(");
+            sb.append(" P2blue: ");
             sb.append(algo);
-            sb.append(")");
-            sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
-            sb.append(" States: " + numStatesExpanded + "\t");
-            player1_stats.setText(sb.toString());
-        } else if (turn == Tile.BLUE) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(" P2red(");
-            sb.append(algo);
-            sb.append(")");
             sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
             sb.append(" States: " + numStatesExpanded + "\t");
             player2_stats.setText(sb.toString());
+        } else if (turn == Tile.BLUE) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" P1red: ");
+            sb.append(algo);
+            sb.append(" t: " + timeTaken / 1000.0 + "s" + "\t");
+            sb.append(" States: " + numStatesExpanded + "\t");
+            player1_stats.setText(sb.toString());
         }
 
-        Log.d("stats", "algo:" + algo + " t:" + timeTaken + " sE:" + numStatesExpanded + " sM:" + numMaxStatesInMemory);
+        Log.d("stats", algo + " " + timeTaken + " " +numStatesExpanded);
     }
 }

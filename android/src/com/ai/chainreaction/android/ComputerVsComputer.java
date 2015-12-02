@@ -18,8 +18,8 @@ import android.widget.TextView;
 public class ComputerVsComputer extends Activity implements View.OnClickListener {
 
     public final String PREFS_NAME = "MyPrefsFile";
-    int firstChoice = 0;
-    int secondChoice = 0;
+    static int firstChoice = 0;
+    static int secondChoice = 0;
     TextView firstPlayer;
     TextView secondPlayer;
     String[] values;
@@ -66,7 +66,16 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
                                     int position, long id) {
 
                 firstChoice = position;
+
                 firstPlayer.setText(values[position]);
+                if(position==2)
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("side",0);
+                    Intent i = new Intent(ComputerVsComputer.this, MiniMaxArguments.class);
+                    i.putExtras(b);
+                    startActivity(i);
+                }
 
             }
 
@@ -82,6 +91,14 @@ public class ComputerVsComputer extends Activity implements View.OnClickListener
                 // ListView Clicked item index
                 secondChoice = position;
                 secondPlayer.setText(values[position]);
+                if(position==2)
+                {
+                    Bundle b = new Bundle();
+                    b.putInt("side",1);
+                    Intent i = new Intent(ComputerVsComputer.this, MiniMaxArguments.class);
+                    i.putExtras(b);
+                    startActivity(i);
+                }
 
 
             }

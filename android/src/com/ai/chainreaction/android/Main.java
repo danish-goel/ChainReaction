@@ -28,7 +28,8 @@ public class Main extends Activity implements View.OnClickListener {
         }
         else if(v.getId()==R.id.settings)
         {
-
+            Intent i=new Intent(this,Settings.class);
+            startActivity(i);
         }
     }
 }
