@@ -7,13 +7,13 @@
         android:id="@+id/player1stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Player 1 States Expanded"/>
+        android:text="Player 1 Red States Expanded"/>
 
     <TextView
         android:id="@+id/player2stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Player 2 States Expaneded"/>
+        android:text="Player 2 Blue States Expanded"/>
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

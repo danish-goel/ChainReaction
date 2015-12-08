@@ -1,7 +1,5 @@
 package com.ai.chainreaction.android;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,14 +13,12 @@ import com.ai.chainreaction.ChainReaction;
 import com.ai.chainreaction.Tile;
 import com.ai.chainreaction.Utilities;
 import com.ai.chainreaction.algorithms.GreedyAlgorithm;
-import com.ai.chainreaction.algorithms.IAlgorithm;
 import com.ai.chainreaction.algorithms.MCTS.ChainReactionPlayer;
 import com.ai.chainreaction.algorithms.MCTS.ChainReactionState;
 import com.ai.chainreaction.algorithms.MCTS.Mcts;
 import com.ai.chainreaction.algorithms.MiniMax;
 import com.ai.chainreaction.algorithms.RandomAlgorithm;
 import com.ai.chainreaction.heuristics.ChainHeuristic;
-import com.ai.chainreaction.heuristics.IHeuristic;
 import com.ai.chainreaction.heuristics.PieceCountHeuristic;
 import com.ai.chainreaction.stats.IStats;
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -30,11 +26,8 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Calendar;
 
@@ -58,6 +51,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
         setContentView(R.layout.game_layout);
         getAlgoChoice();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+//        Log.d("rc",getRowsFromUser() + " "+ getColumnsFromUser());
         chainReaction = new com.ai.chainreaction.ChainReaction(this, getRowsFromUser(), getColumnsFromUser());
         FrameLayout fl = ((FrameLayout) findViewById(R.id.fl));
         fl.addView(initializeForView(chainReaction, config));
@@ -97,7 +91,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveMiniMax(int player, int depth, boolean pruning, int heuristic) {
-        Log.d("abcd", "minimax");
+//        Log.d("abcd", "minimax");
         MiniMax miniMax = new MiniMax(Utilities.initalizeGrid(chainReaction.tiles), depth, pruning, ((heuristic==0)?new PieceCountHeuristic():new ChainHeuristic(true)), this);
         Utilities.Pos pos = miniMax.getNextMove(player);
         int moveRow = pos.row;
@@ -106,7 +100,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveMCTS(int player, int iterations) {
-        Log.d("abcd", "mcts");
+//        Log.d("abcd", "mcts");
         Mcts<ChainReactionState, Utilities.Pos, ChainReactionPlayer> mcts = Mcts.initializeIterations(iterations);
         Utilities.Pos pos = mcts.uctSearchWithExploration(new ChainReactionState(Utilities.initalizeGrid(chainReaction.tiles), (player + 1) / 2), 0.2, iterations, player, this);
         int moveRow = pos.row;
@@ -115,7 +109,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyGreedy(int player) {
-        Log.d("abcd", "greedy");
+//        Log.d("abcd", "greedy");
         Utilities.Pos pos = new GreedyAlgorithm().getNextMove(Utilities.initalizeGrid(chainReaction.tiles), player);
         int moveRow = pos.row;
         int moveColumn = pos.col;
@@ -123,7 +117,7 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
     }
 
     public void programaticallyMoveRandom(int player) {
-        Log.d("abcd", "random");
+//        Log.d("abcd", "random");
         Utilities.Pos pos = new RandomAlgorithm().getNextMove(Utilities.initalizeGrid(chainReaction.tiles), player);
         int randomMoveRow = pos.row;
         int randomMoveColumn = pos.col;
@@ -294,15 +288,15 @@ public class GameScreen extends AndroidApplication implements ChainReaction.Game
             text+="P1 ";
         }
         text +=  algo + " " + timeTaken + " " +numStatesExpanded;
-        Log.d("stats", text);
-        writeToFile("myFile.txt",text);
+//        Log.d("stats", text);
+        //writeToFile("myFile.txt",text);
 
     }
 
     public void writeToFile(String fileName, String text) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),fileName);
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "utf-8"))) {
+                new FileOutputStream(file, true), "utf-8"))) {
             writer.write("\n");
             writer.write(Calendar.getInstance().getTime().toString() +" " + text);
             writer.flush();
